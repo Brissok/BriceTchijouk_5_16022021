@@ -1,0 +1,18 @@
+
+/* Colors */
+
+$primary: #8f5bfe;
+$secondary: #e68a09;
+$bg: #f3e9f1;
+
+/* responsive */
+
+$small: 426px!default;
+$medium: 768px!default;
+$large: 991px!default;
+$xlarge: 1145px!default;
+
+$small-up: "only screen and (min-width: #{$small})";
+$medium-up: "only screen and (min-width: #{$medium})";
+$large-up: "only screen and (min-width: #{$large})";
+$xlarge-up: "only screen and (min-width: #{$xlarge})";
