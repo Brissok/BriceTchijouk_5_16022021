@@ -50,7 +50,7 @@ td:not([align]), th:not([align]) {
 }
 
 body, input {
-  font-size: 16px;
+  font-size: 12px;
   font-family: "Roboto", sans-serif;
   background-color: #f3e9f1;
 }
@@ -65,24 +65,38 @@ a {
   font-size: 1.7em;
 }
 
-h1, h2 {
-  font-size: 1.5em;
+h1 {
+  font-size: 1.25em;
   font-weight: bold;
   line-height: 1.25;
+  margin: 2rem auto;
+}
+
+h2 {
+  font-size: 1.1em;
+  font-weight: 600;
 }
 
 .container {
   padding: 0 20px;
 }
 
-@media only screen and (min-width: 426px) {
+@media only screen and (min-width: 768px) {
   .container {
     padding: 0 50px;
   }
+
+  h1 {
+    font-size: 1.25em;
+  }
 }
 .headerContainer {
-  height: 100px;
   text-align: center;
+  box-shadow: 0 5px 9px #e5e5e5;
+  position: fixed;
+  width: 100%;
+  background-color: #f3e9f1;
+  top: 0;
 }
 
 .logoSite {
@@ -97,6 +111,87 @@ h1, h2 {
   color: #8f5bfe;
   top: 20px;
   right: 20px;
+}
+
+@media only screen and (min-width: 768px) {
+  .basketLink {
+    right: 50px;
+  }
+}
+.footerContainer {
+  background-color: #353535;
+  color: #fff;
+  padding-top: 26px;
+  padding-bottom: 32px;
+}
+.footerContainer svg path {
+  fill: #fff;
+}
+.footerContainer li {
+  line-height: 1.6em;
+}
+.footerContainer li:nth-child(-n+2) {
+  font-weight: 500;
+}
+.footerContainer__logo {
+  font-size: larger;
+  margin-bottom: 15px;
+}
+.footerContainer__list--icon {
+  margin-right: 11.5px;
+  color: #fff;
+}
+
+.mainContainer {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.products {
+  margin: 2rem 0;
+}
+
+.product-card {
+  width: 100%;
+  border: solid 2px #CCC;
+  margin: 10px 0;
+}
+.product-body {
+  padding: 0 1em;
+}
+.product-name {
+  margin: 0.75rem;
+}
+.product-price {
+  margin: 1rem;
+  color: #8f5bfe;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.product-button {
+  background-color: #e68a09;
+  color: #fff;
+  padding: 0.5rem;
+  border: none;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.4);
+  margin-bottom: 1rem;
+}
+
+@media only screen and (min-width: 426px) {
+  .products {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .product {
+    width: 50%;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .product {
+    width: 33%;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */

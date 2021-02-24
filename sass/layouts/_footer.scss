@@ -1,0 +1,23 @@
+.footerContainer {
+    background-color: #353535;
+    color: #fff;
+    padding-top: 26px;
+    padding-bottom: 32px;
+    & svg path {
+        fill: #fff;
+    }
+    & li {
+        line-height: 1.6em;
+        &:nth-child(-n+2) {
+            font-weight: 500;
+        }
+    }
+    &__logo {
+        font-size: larger;
+        margin-bottom: 15px;
+    }
+    &__list--icon {
+        margin-right: 11.5px;
+        color: #fff;
+        }
+}

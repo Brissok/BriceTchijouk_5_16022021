@@ -1,6 +1,10 @@
 .headerContainer {
-    height: 100px;
     text-align: center;
+    box-shadow: 0 5px 9px rgb(229, 229, 229);
+    position: fixed;
+    width: 100%;
+    background-color: $bg;
+    top: 0;
 }
 
 .logoSite {
@@ -15,4 +19,10 @@
     color: $primary;
     top: 20px;
     right: 20px;
+}
+
+@media #{$medium-up} {
+    .basketLink {
+        right: 50px;
+    }
 }
