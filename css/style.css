@@ -108,14 +108,32 @@ h2 {
 .basketLink {
   position: absolute;
   font-size: 25px;
-  color: #8f5bfe;
   top: 20px;
   right: 20px;
+  color: #7e7e7e;
+}
+.basketLink:hover {
+  color: #8f5bfe;
+}
+
+.returnLink {
+  position: absolute;
+  font-size: 18px;
+  left: 20px;
+  top: 25px;
+  color: #7e7e7e;
+}
+.returnLink:hover {
+  color: #8f5bfe;
 }
 
 @media only screen and (min-width: 768px) {
   .basketLink {
     right: 50px;
+  }
+
+  .returnLink {
+    left: 50px;
   }
 }
 .footerContainer {

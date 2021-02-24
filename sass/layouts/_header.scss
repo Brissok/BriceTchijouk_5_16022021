@@ -16,13 +16,30 @@
 .basketLink {
     position: absolute;
     font-size: 25px;
-    color: $primary;
     top: 20px;
     right: 20px;
+    color: rgb(126, 126, 126);
+    &:hover {
+        color: $primary;
+    }
+}
+
+.returnLink {
+    position: absolute;
+    font-size: 18px;
+    left: 20px;
+    top: 25px;
+    color: rgb(126, 126, 126);
+    &:hover {
+        color: $primary;
+    }
 }
 
 @media #{$medium-up} {
     .basketLink {
         right: 50px;
+    }
+    .returnLink {
+        left: 50px;
     }
 }

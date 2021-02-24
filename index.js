@@ -1,30 +1,38 @@
-let products_id = [];
+// Affichage des produits sur la page 
 
 var request = new XMLHttpRequest();
 request.onreadystatechange = function() {
     if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
         let response = JSON.parse(this.responseText);
-        for (let i = 0 ; i < response.length ; i++) {
-          let id = response[i]._id;
-          let product = createProductElement(id);
-          let products = document.getElementById('products');
-          products.appendChild(product);
-          let productCard = createProductCard();
-          product.appendChild(productCard);
-          let imageUrl = response[i].imageUrl;
-          let name = response[i].name;
-          let img = createImgElement(imageUrl, name);
-          productCard.appendChild(img);
-          let description = response[i].description;
-          let price = response[i].price;
-          let body = createProductBody(name, description, price, id);
-          productCard.appendChild(body);
-        }
+        postProducts(response);
     }
 };
 request.open("GET", "http://localhost:3000/api/cameras");
 request.send();
 
+/**
+ * 
+ * @param {Array} response
+ * 
+ */
+const postProducts = (response) => {
+  for (let i = 0 ; i < response.length ; i++) {
+    let id = response[i]._id;
+    let product = createProductElement(id);
+    let products = document.getElementById('products');
+    products.appendChild(product);
+    let productCard = createProductCard();
+    product.appendChild(productCard);
+    let imageUrl = response[i].imageUrl;
+    let name = response[i].name;
+    let img = createImgElement(imageUrl, name);
+    productCard.appendChild(img);
+    let description = response[i].description;
+    let price = response[i].price;
+    let body = createProductBody(name, description, price, id);
+    productCard.appendChild(body);
+  }
+}
 
 /**
  * 
@@ -33,18 +41,29 @@ request.send();
  */
 const createProductElement = (id) => {
   let product = document.createElement('a');
-  product.setAttribute('href', "#");
+  product.setAttribute('href', "html/product.html");
   product.setAttribute('class', 'product');
   product.setAttribute('id', id);
   return product;
 }
 
+/**
+ * 
+ * 
+ * @returns {HTMLElement}
+ */
 const createProductCard = () => {
   let productCard = document.createElement('div');
   productCard.setAttribute('class', 'product-card');
   return productCard;
 }
 
+/**
+ * 
+ * @param {string} imagUrl
+ * @param {string} name
+ * @returns {HTMLElement}
+ */
 const createImgElement = (imageUrl, name) => {
   let img = document.createElement('img');
   img.setAttribute('class', 'product-img');
@@ -53,6 +72,14 @@ const createImgElement = (imageUrl, name) => {
   return img;
 }
 
+/**
+ * 
+ * @param {string} name
+ * @param {string} description
+ * @param {string} price
+ * @param {objectID} id
+ * @returns {HTMLElement}
+ */
 const createProductBody = (name, description, price, id) => {
   let productBody = createElementWithClass('div', 'product-body');
   let productName = createElementWithClass('h2', 'product-name');
@@ -71,8 +98,34 @@ const createProductBody = (name, description, price, id) => {
   return productBody;
 }
 
+/**
+ * 
+ * @param {string} element
+ * @param {string} className
+ * @returns {HTMLElement}
+ */
 const createElementWithClass = (element, className) => {
   let elt = document.createElement(element);
   elt.setAttribute('class', className);
   return elt;
 }
+
+/* Ecoute du clic sur un produit
+
+let product = document.getElementsByClassName('product');
+product.addEventListener('click', function {
+  this.getAttribute('id');
+
+})
+
+const postProductSelected = (id) => {
+  var request = new XMLHttpRequest();
+  request.onreadystatechange = function() {
+    if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+        let response = JSON.parse(this.responseText);
+    }
+  };
+  request.open("GET", "http://localhost:3000/api/cameras/" + id);
+  request.send();
+}
+*/
