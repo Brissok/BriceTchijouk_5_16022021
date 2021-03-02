@@ -1,18 +1,48 @@
-// Affichage des produits sur la page 
+// Fonction pour savoir si nous sommes sur la page d'accueil
+/**
+ * 
+ * @param void
+ * @returns {boolean}
+ * 
+ */
+const isHome = () => {
+  var home = document.querySelector('.home');
+    if (home !== null) {
+      return true;
+    }
+    else {
+      return false;
+    }
+};
 
-var request = new XMLHttpRequest();
-request.onreadystatechange = function() {
+// Affichage des produits sur la page d'accueil
+/**
+ * 
+ * @param void
+ * @returns {HTMLElement}
+ * 
+ */
+const postAllProducts = () => {
+  var home = isHome();
+  if (home == true) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
     if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
         let response = JSON.parse(this.responseText);
         postProducts(response);
-    }
+      };
+    };
+    request.open("GET", "http://localhost:3000/api/cameras");
+    request.send();
+  };
 };
-request.open("GET", "http://localhost:3000/api/cameras");
-request.send();
+
+postAllProducts();
 
 /**
  * 
  * @param {Array} response
+ * @returns void
  * 
  */
 const postProducts = (response) => {
