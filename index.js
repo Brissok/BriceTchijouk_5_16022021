@@ -1,3 +1,6 @@
+//variable global pour récupérer l'id du produit cliqué
+var productDetails = 0;
+
 loadProducts("http://localhost:3000/api/cameras")
   .then(function(content) {
     postProducts(content);
@@ -10,6 +13,7 @@ loadProducts("http://localhost:3000/api/cameras")
 loadProducts("http://localhost:3000/api/cameras/5be1ed3f1c9d44000030b061")
   .then(function(content) {
     postProductDetails(content);
+    addClickListener();
   })
   .catch(function (err) {
     console.error('Erreur !');
@@ -60,10 +64,10 @@ function loadProducts (url) {
 
 /** EVENT LISTENERS */
 
-const clickListener = (products) => {
-  var product = document.querySelectorAll('.product');
+const addClickListener = () => {
+  var product = document.querySelector('.product');
   product.addEventListener('click', function() {
-  console.log(product);
+  return product.id;
   });
 }
   
@@ -86,6 +90,9 @@ const postProducts = (response) => {
   for (let i = 0 ; i < response.length ; i++) {
     let id = response[i]._id;
     let product = createProductElement(id);
+    product.addEventListener('click', function() {
+      productDetails = product.id;
+    });
     let products = document.getElementById('products');
     products.appendChild(product);
     let productCard = createProductCard();
