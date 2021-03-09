@@ -1,7 +1,39 @@
-//variable global pour récupérer l'id du produit cliqué
-var productDetails = 0;
+  // Fonction pour savoir si nous sommes sur la page d'accueil
+/**
+ * 
+ * @param void
+ * @returns {boolean}
+ * 
+ */
+ const isHome = () => {
+  let home = document.querySelector('.home');
+    if (home !== null) {
+      return true;
+    }
+    else {
+      return false;
+    }
+};
 
-loadProducts("http://localhost:3000/api/cameras")
+// on récupère l'id passé dans l'URL de la page
+/**
+ * 
+ * 
+ * @returns {string} param
+ * 
+ */
+const getId = () => {
+  let searchParams = new URLSearchParams(window.location.search);
+  searchParams.has('id');
+  let param = searchParams.get('id');
+  return param;
+}
+
+
+//variable global pour récupérer l'id du produit cliqué
+
+if (isHome()==true) {
+  loadProducts("http://localhost:3000/api/cameras")
   .then(function(content) {
     postProducts(content);
   })
@@ -9,8 +41,9 @@ loadProducts("http://localhost:3000/api/cameras")
     console.error('Erreur !');
     console.dir(err);
   });
-  
-loadProducts("http://localhost:3000/api/cameras/5be1ed3f1c9d44000030b061")
+} else {
+  let id = getId(); //renvoi l'id du produit sélectionné dans la variable "param"
+  loadProducts("http://localhost:3000/api/cameras/" + id)
   .then(function(content) {
     postProductDetails(content);
     addClickListener();
@@ -19,25 +52,8 @@ loadProducts("http://localhost:3000/api/cameras/5be1ed3f1c9d44000030b061")
     console.error('Erreur !');
     console.dir(err);
   });
+}
 
-
-
-  // Fonction pour savoir si nous sommes sur la page d'accueil
-/**
- * 
- * @param void
- * @returns {boolean}
- * 
- */
-const isHome = () => {
-  var home = document.querySelector('.home');
-    if (home !== null) {
-      return true;
-    }
-    else {
-      return false;
-    }
-};
 
 /** FONCTION DE REQUETES */
 
@@ -50,7 +66,7 @@ const isHome = () => {
  */
 function loadProducts (url) {
   return new Promise(function(resolve, reject) {
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.onload = function (event) {
       resolve(JSON.parse(request.responseText));
     };
@@ -65,13 +81,11 @@ function loadProducts (url) {
 /** EVENT LISTENERS */
 
 const addClickListener = () => {
-  var product = document.querySelector('.product');
+  let product = document.querySelector('.product');
   product.addEventListener('click', function() {
   return product.id;
   });
 }
-  
-
 
 const getProductId = (product) => {
   return product.getAttribute('id');
@@ -117,7 +131,7 @@ const postProducts = (response) => {
  */
 const postProductDetails = (response) => {
   let id = response._id;
-  let product = createProductElement(id);
+  let product = createElementWithClass('div', 'product, product_details');
   let products = document.getElementById('products');
   products.appendChild(product);
   let productCard = createProductCard();
@@ -141,7 +155,7 @@ const postProductDetails = (response) => {
  */
 const createProductElement = (id) => {
   let product = document.createElement('a');
-  product.setAttribute('href', "html/product.html");
+  product.setAttribute('href', "html/product.html?id=" + id);
   product.setAttribute('class', 'product');
   product.setAttribute('id', id);
   return product;
