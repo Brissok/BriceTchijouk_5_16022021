@@ -1,4 +1,16 @@
-  // Fonction pour savoir sur quelle page nous sommes
+//Création de la classe "product"
+class product {
+  constructor(id, price) {
+    this.id = id;
+    this.price = price;
+  }
+}
+
+//Création du tableau basket qui contiendra les produit choisis
+const basket = [];
+
+
+// Fonction pour savoir sur quelle page nous sommes
 /**
  * 
  * 
@@ -44,8 +56,6 @@ const getId = () => {
   let searchParams = new URLSearchParams(window.location.search);
   if (searchParams.has('id')) {
     let param = searchParams.get('id');
-    
-    console.log(param);
     return param;
   } else {
     window.alert("Le produit que vous recherchez est introuvable !");
@@ -58,6 +68,7 @@ switch (whichPage()) {
     loadProducts("http://localhost:3000/api/cameras")
     .then(function(content) {
       postProducts(content);
+      addClickListener();
     })
     .catch(function (err) {
       console.error('Erreur !');
@@ -69,10 +80,12 @@ switch (whichPage()) {
     loadProducts("http://localhost:3000/api/cameras/" + id)
     .then(function(content) {
       postProductDetails(content);
+      addClickListener();
     })
     .catch(function (err) {
       console.error('Erreur !');
       console.dir(err);
+      window.alert("Une erreur est survennue, veuillez réessayer !")
     });
     break;
   default :
@@ -93,11 +106,12 @@ switch (whichPage()) {
 function loadProducts (url) {
   return new Promise(function(resolve, reject) {
     let request = new XMLHttpRequest();
-    request.onload = function (event) {
-      resolve(JSON.parse(request.responseText));
-    };
-    request.onerror = function (err) {
-      reject(err);
+    request.onreadystatechange = function () {
+      if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+        resolve(JSON.parse(request.responseText));
+      } else if (this.readyState == XMLHttpRequest.DONE && this.status !== 200) {
+        reject(this.status);
+        };
     }
     request.open('GET', url);
     request.send();
@@ -107,11 +121,16 @@ function loadProducts (url) {
 /** EVENT LISTENERS */
 
 const addClickListener = () => {
-  let product = document.querySelector('.product');
-  product.addEventListener('click', function() {
-  return product.id;
-  });
-}
+  let product = document.querySelectorAll('.product-button');
+  product.forEach(
+    function(currentValue) {
+      currentValue.addEventListener('click', function(event) {
+        event.preventDefault();
+        let id = currentValue.getAttribute('id');
+        basket.push(id);
+      });
+    });
+};
 
 const getProductId = (product) => {
   return product.getAttribute('id');
