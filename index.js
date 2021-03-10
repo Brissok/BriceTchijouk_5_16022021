@@ -1,20 +1,38 @@
-  // Fonction pour savoir si nous sommes sur la page d'accueil
+  // Fonction pour savoir sur quelle page nous sommes
 /**
  * 
- * @param void
- * @returns {boolean}
+ * 
+ * @returns {string} onPage
  * 
  */
- const isHome = () => {
-  let home = document.querySelector('.home');
-    if (home !== null) {
-      return true;
-    }
-    else {
-      return false;
-    }
-};
-
+ const whichPage = () => {
+    let onPage = ".homePage";
+    let page = document.querySelector(onPage);
+    if (page == null) {
+      onPage = ".productPage";
+      page = document.querySelector(onPage);
+      if (page == null) {
+        onPage = ".basketPage";
+        page = document.querySelector(onPage);
+        if (page == null) {
+          onPage = ".orderPage";
+          page = document.querySelector(onPage);
+          if (page == null) {
+            window.alert("Page inconnu");
+          } else {
+            return onPage;
+            }
+        } else {
+          return onPage;
+          }
+      } else {
+        return onPage;
+        }
+    } else {
+      return onPage;
+      }
+  };
+  
 // on récupère l'id passé dans l'URL de la page
 /**
  * 
@@ -24,34 +42,42 @@
  */
 const getId = () => {
   let searchParams = new URLSearchParams(window.location.search);
-  searchParams.has('id');
-  let param = searchParams.get('id');
-  return param;
+  if (searchParams.has('id')) {
+    let param = searchParams.get('id');
+    
+    console.log(param);
+    return param;
+  } else {
+    window.alert("Le produit que vous recherchez est introuvable !");
+  };
 }
 
 
-//variable global pour récupérer l'id du produit cliqué
-
-if (isHome()==true) {
-  loadProducts("http://localhost:3000/api/cameras")
-  .then(function(content) {
-    postProducts(content);
-  })
-  .catch(function (err) {
-    console.error('Erreur !');
-    console.dir(err);
-  });
-} else {
-  let id = getId(); //renvoi l'id du produit sélectionné dans la variable "param"
-  loadProducts("http://localhost:3000/api/cameras/" + id)
-  .then(function(content) {
-    postProductDetails(content);
-    addClickListener();
-  })
-  .catch(function (err) {
-    console.error('Erreur !');
-    console.dir(err);
-  });
+switch (whichPage()) {
+  case ".homePage" :
+    loadProducts("http://localhost:3000/api/cameras")
+    .then(function(content) {
+      postProducts(content);
+    })
+    .catch(function (err) {
+      console.error('Erreur !');
+      console.dir(err);
+    });
+    break;
+  case ".productPage" :
+    let id = getId();
+    loadProducts("http://localhost:3000/api/cameras/" + id)
+    .then(function(content) {
+      postProductDetails(content);
+    })
+    .catch(function (err) {
+      console.error('Erreur !');
+      console.dir(err);
+    });
+    break;
+  default :
+    console.log("Page inconnue");
+  
 }
 
 
@@ -227,23 +253,3 @@ const createElementWithClass = (element, className) => {
   elt.setAttribute('class', className);
   return elt;
 }
-
-/* Ecoute du clic sur un produit
-
-let product = document.getElementsByClassName('product');
-product.addEventListener('click', function {
-  this.getAttribute('id');
-
-})
-
-const postProductSelected = (id) => {
-  var request = new XMLHttpRequest();
-  request.onreadystatechange = function() {
-    if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-        let response = JSON.parse(this.responseText);
-    }
-  };
-  request.open("GET", "http://localhost:3000/api/cameras/" + id);
-  request.send();
-}
-*/
