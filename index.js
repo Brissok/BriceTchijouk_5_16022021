@@ -6,7 +6,7 @@ class product {
   }
 }
 
-//Création du tableau basket qui contiendra les produit choisis
+//Création du tableau basket qui contiendra les produits choisis
 const basket = [];
 
 
@@ -128,6 +128,7 @@ const addClickListener = () => {
         event.preventDefault();
         let id = currentValue.getAttribute('id');
         basket.push(id);
+        
       });
     });
 };
