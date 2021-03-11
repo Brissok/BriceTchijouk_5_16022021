@@ -6,9 +6,8 @@ class product {
   }
 }
 
-//Création du tableau basket qui contiendra les produits choisis
-const basket = [];
-
+// Variable globale qui contiendra l'id des produits ajoutés au panier
+let basket = [];
 
 // Fonction pour savoir sur quelle page nous sommes
 /**
@@ -68,7 +67,7 @@ switch (whichPage()) {
     loadProducts("http://localhost:3000/api/cameras")
     .then(function(content) {
       postProducts(content);
-      addClickListener();
+      addToBasketListener();
     })
     .catch(function (err) {
       console.error('Erreur !');
@@ -80,7 +79,7 @@ switch (whichPage()) {
     loadProducts("http://localhost:3000/api/cameras/" + id)
     .then(function(content) {
       postProductDetails(content);
-      addClickListener();
+      addToBasketListener();
     })
     .catch(function (err) {
       console.error('Erreur !');
@@ -95,6 +94,7 @@ switch (whichPage()) {
 
 
 /** FONCTION DE REQUETES */
+
 
 //Fonction de chargement de données distantes et renvoyant une promesse
 /**
@@ -118,26 +118,21 @@ function loadProducts (url) {
   });
 };
 
+
 /** EVENT LISTENERS */
 
-const addClickListener = () => {
+
+const addToBasketListener = () => {
   let product = document.querySelectorAll('.product-button');
   product.forEach(
     function(currentValue) {
-      currentValue.addEventListener('click', function(event) {
-        event.preventDefault();
-        let id = currentValue.getAttribute('id');
-        basket.push(id);
-        
-      });
+      addConfirmBox(currentValue, "Ce produit a bien été ajouté à votre panier !");
     });
 };
 
-const getProductId = (product) => {
-  return product.getAttribute('id');
-}
 
 /** MODIFICATION DU DOM */
+
 
 //Affichage des produits sur la page
 /**
@@ -272,4 +267,47 @@ const createElementWithClass = (element, className) => {
   let elt = document.createElement(element);
   elt.setAttribute('class', className);
   return elt;
+}
+
+/** LES BOITES MODALES */
+
+const addConfirmBox = (element, text) => {
+  var modalContainer = document.createElement('div');
+  modalContainer.setAttribute('id', 'modal');
+
+  var confirmBox = document.createElement('div');
+  confirmBox.className = 'confirm-box';
+
+  // Affichage boîte de confirmation
+  element.addEventListener('click', function(e) {
+    e.preventDefault();
+    confirmBox.innerHTML = '<p>' + text + '</p>';
+    confirmBox.innerHTML += '<button id="modal-confirm">Confirmer</button>';
+    confirmBox.innerHTML += '<button id="modal-close">Annuler</button>';
+    modalShow();
+  });
+
+  function modalShow() {
+      modalContainer.appendChild(confirmBox);
+      document.body.appendChild(modalContainer);
+
+      document.getElementById('modal-close').addEventListener('click', function() {
+          modalClose();
+      });
+      document.getElementById('modal-confirm').addEventListener('click', function () {
+          console.log('Confirmé !');
+          let id = element.getAttribute('id');
+          basket.push(id);
+          localStorage.setItem('basket', basket);
+          console.log(basket);
+          modalClose();
+      });
+      }
+
+  function modalClose() {
+      while (modalContainer.hasChildNodes()) {
+          modalContainer.removeChild(modalContainer.firstChild);
+      }
+      document.body.removeChild(modalContainer);
+  }
 }
