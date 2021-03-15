@@ -13,9 +13,7 @@ class product {
 // Fonction pour savoir sur quelle page nous sommes
 /**
  * 
- * 
- * @returns {string} onPage
- * 
+ * @returns {string}
  */
 const whichPage = () => {
     let onPage = ".homePage";
@@ -45,11 +43,11 @@ const whichPage = () => {
       }
 }
   
-// on récupère l'id passé dans l'URL de la page
+//Fonction pour récupérer l'id passé dans l'URL de la page
 /**
  * 
  * 
- * @returns {string} param
+ * @returns {string}
  * 
  */
 const getId = () => {
@@ -64,6 +62,12 @@ const getId = () => {
 
 /** LES BOITES MODALES */
 
+//Fonction pour ajouter une boîte modale de confirmation
+/**
+ * 
+ * @param {HTMLElement} element 
+ * @param {string} text 
+ */
 const addConfirmBox = (element, text) => {
   var modalContainer = document.createElement('div');
   modalContainer.setAttribute('id', 'modal');
@@ -86,7 +90,7 @@ const addConfirmBox = (element, text) => {
     }
     
   });
-
+  //Fonction pour afficher la boîte modale
   function modalShow() {
       modalContainer.appendChild(confirmBox);
       document.body.appendChild(modalContainer);
@@ -94,37 +98,72 @@ const addConfirmBox = (element, text) => {
       document.getElementById('modal-close').addEventListener('click', function() {
           modalClose();
       });
+      //Si c'est la boîte modale pour confirmer l'ajout au panier
       if (document.getElementById('modal-confirm-clear') === null) {
         document.getElementById('modal-confirm').addEventListener('click', function () {
         console.log('Confirmé !');
+        //On ajoute le produit au panier
         pushProductInBasket(element);
+        //On ferme la boîte modale
         modalClose();
+        //On ajoute la pastille rouge sur l'icône si elle n'y est pas
         redDot();
       });
-      } else {
+      }//Sinon (boîte modale pour vider le panier)
+       else {
           document.getElementById('modal-confirm-clear').addEventListener('click', function () {
           console.log('Panier vidé !');
+          //On vide le panier
           clearBasket();
+          //On ferme la boîte modale
           modalClose();
+          //On retire la pastille rouge de l'icône
           redDot();
+          //On retire le bouton "vider le panier"
+          let clearBtn = document.querySelector('.clearBasket-button');
+          clearBtn.remove();
+          //On retire les produits
+          let clearProducts = document.querySelectorAll('.product_details');
+          clearProducts.forEach(
+            function(currentValue) {
+              currentValue.remove();
+            }
+          );
+          //On affiche ce qu'il faut en cas de panier vide
+          postBasket();
         });
       }
+      
+      //fonction permettant d'ajouter un produit au panier
+      /**
+       * 
+       * @param {HTMLElement} element 
+       */
       function pushProductInBasket(element) {
+        //Si le panier n'existe pas
         if (localStorage.getItem('basket') === null) {
+          //Création du panier
           let basket = [];
+          //Récupération de l'id du produit et ajout au panier
           let id = element.getAttribute('id');
           basket.push(id);
+          //Sauvegarde du panier sur LocalStorage
           localStorage.setItem('basket', basket);
           console.log(basket);
-        } else {
+        } //Si le panier existe
+          else {
+          //On récupère le panier sur le localStorage et le transforme en tableau
           let basket = localStorage.getItem("basket");
-          let id = element.getAttribute('id');
           let newBasket = basket.split(",");
+          //Récupération de l'id du produit et ajout au panier
+          let id = element.getAttribute('id');
           newBasket.push(id);
+          //Sauvegarde du panier sur LocalStorage
           localStorage.setItem('basket', newBasket);
           console.log(newBasket);
-        }
+          }
       }
+      //Fonction permettant de vider le panier
       function clearBasket() {
         if (localStorage.getItem('basket') === null) {
           window.alert("Votre panier ne contient aucun produit !")
@@ -133,7 +172,7 @@ const addConfirmBox = (element, text) => {
         }
       }
   }
-
+  //Fonction pour fermer la boîte modale
   function modalClose() {
       while (modalContainer.hasChildNodes()) {
           modalContainer.removeChild(modalContainer.firstChild);
@@ -330,6 +369,51 @@ function redDot() {
     }
 }
 
+//Fonction pour afficher le panier
+const postBasket = () => {
+  // Si le panier n'existe pas
+  if (localStorage.getItem("basket") === null) {
+    //Afficher "votre panier est vide"
+    const noBasket = createElementWithClass("div", "noBasket");
+    noBasket.innerHTML = "Votre panier est vide";
+    const products = document.getElementById('products');
+    products.appendChild(noBasket);
+    //Afficher le bouton "voir la boutique" (lien vers la page d'accueil)
+    const shopBtn = createElementWithClass("a", "homeLink");
+    shopBtn.setAttribute("href", "../index.html");
+    shopBtn.innerHTML = "<button class='button'>Voir la boutique</button>";
+    products.appendChild(shopBtn);
+  } else {
+    //Récupèration du panier sur localStorage
+    let basket = localStorage.getItem("basket").split(",");
+    //Afficher le contenu du panier
+    basket.forEach(
+      function(currentValue) {
+        loadProducts("http://localhost:3000/api/cameras/" + currentValue)
+        .then(function(content) {
+          postProductDetails(content);
+          addToBasketListener();
+        })
+        .catch(function (err) {
+          console.error('Erreur !');
+          console.dir(err);
+          window.alert("Une erreur est survennue, veuillez réessayer !")
+        });
+      }
+    )
+      
+    const products = document.getElementById('products');
+    //Afficher le prix total
+    //Afficher le formulaire pour passer une commande
+    //Afficher le bouton "vider le panier"
+    const clearBasket = createElementWithClass("button", "button clearBasket-button");
+    clearBasket.innerHTML = "Vider mon panier";
+    products.appendChild(clearBasket);
+    let clearBtn = document.querySelector('.clearBasket-button');
+    addConfirmBox(clearBtn, "Etes-vous sûr de vouloir vider votre panier ?");
+  }
+}
+
 switch (whichPage()) {
   case ".homePage" :
     redDot();
@@ -359,31 +443,7 @@ switch (whichPage()) {
     break;
   case ".basketPage" :
     redDot();
-    // Si le panier n'existe pas
-    if (localStorage.getItem("basket") === null) {
-      //Afficher "votre panier est vide"
-      const noBasket = createElementWithClass("div", "noBasket");
-      noBasket.innerHTML = "Votre panier est vide";
-      const products = document.getElementById('products_basket');
-      products.appendChild(noBasket);
-      //Afficher le bouton "voir la boutique" (lien vers la page d'accueil)
-      const shopBtn = createElementWithClass("a", "homeLink");
-      shopBtn.setAttribute("href", "../index.html");
-      shopBtn.innerHTML = "<button class='button'>Voir la boutique</button>";
-      products.appendChild(shopBtn);
-    } else {
-      //Afficher le contenu du panier
-      const products = document.getElementById('products_basket');
-      //Afficher le prix total
-      //Afficher le formulaire pour passer une commande
-      //Afficher le bouton "vider le panier"
-      const clearBasket = createElementWithClass("button", "button clearBasket-button");
-      clearBasket.innerHTML = "Vider mon panier";
-      products.appendChild(clearBasket);
-      let clearBtn = document.querySelector('.clearBasket-button');
-      addConfirmBox(clearBtn, "Etes-vous sûr de vouloir vider votre panier ?");
-    }
-    
+    postBasket();
     break;
   default :
     console.log("Page inconnue");
