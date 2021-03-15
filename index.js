@@ -84,6 +84,7 @@ const addConfirmBox = (element, text) => {
       confirmBox.innerHTML += '<button id="modal-close">Annuler</button>';
       modalShow();
     }
+    
   });
 
   function modalShow() {
@@ -98,12 +99,14 @@ const addConfirmBox = (element, text) => {
         console.log('Confirmé !');
         pushProductInBasket(element);
         modalClose();
+        redDot();
       });
       } else {
           document.getElementById('modal-confirm-clear').addEventListener('click', function () {
           console.log('Panier vidé !');
           clearBasket();
           modalClose();
+          redDot();
         });
       }
       function pushProductInBasket(element) {
@@ -137,43 +140,6 @@ const addConfirmBox = (element, text) => {
       }
       document.body.removeChild(modalContainer);
   }
-}
-
-
-
-
-switch (whichPage()) {
-  case ".homePage" :
-    loadProducts("http://localhost:3000/api/cameras")
-    .then(function(content) {
-      postProducts(content);
-      addToBasketListener();
-    })
-    .catch(function (err) {
-      console.error('Erreur !');
-      console.dir(err);
-    });
-    break;
-  case ".productPage" :
-    let id = getId();
-    loadProducts("http://localhost:3000/api/cameras/" + id)
-    .then(function(content) {
-      postProductDetails(content);
-      addToBasketListener();
-    })
-    .catch(function (err) {
-      console.error('Erreur !');
-      console.dir(err);
-      window.alert("Une erreur est survennue, veuillez réessayer !")
-    });
-    break;
-  case ".basketPage" :
-    let clearBtn = document.querySelector('.clearBasket-button');
-    addConfirmBox(clearBtn, "Etes-vous sûr de vouloir vider votre panier ?");
-    break;
-  default :
-    console.log("Page inconnue");
-  
 }
 
 
@@ -340,7 +306,7 @@ const createProductBody = (name, description, price, id) => {
   return productBody;
 }
 
-//Fonction crénat un élément avec une classe
+//Fonction créant un élément avec une classe
 /**
  * 
  * @param {string} element
@@ -351,4 +317,75 @@ const createElementWithClass = (element, className) => {
   let elt = document.createElement(element);
   elt.setAttribute('class', className);
   return elt;
+}
+
+//Fonction pour afficher la pastille sur le panier
+function redDot() {
+  const basketIcon = document.getElementById('basket');
+  //Si le panier est vide 
+  if (localStorage.getItem("basket") === null && basketIcon.classList.contains("basket_hasProduct")) {
+    basketIcon.classList.remove("basket_hasProduct");
+  } else if (localStorage.getItem("basket") && !basketIcon.classList.contains("basket_hasProduct")) {
+    basketIcon.classList.toggle("basket_hasProduct");
+    }
+}
+
+switch (whichPage()) {
+  case ".homePage" :
+    redDot();
+    loadProducts("http://localhost:3000/api/cameras")
+    .then(function(content) {
+      postProducts(content);
+      addToBasketListener();
+    })
+    .catch(function (err) {
+      console.error('Erreur !');
+      console.dir(err);
+    });
+    break;
+  case ".productPage" :
+    redDot();
+    let id = getId();
+    loadProducts("http://localhost:3000/api/cameras/" + id)
+    .then(function(content) {
+      postProductDetails(content);
+      addToBasketListener();
+    })
+    .catch(function (err) {
+      console.error('Erreur !');
+      console.dir(err);
+      window.alert("Une erreur est survennue, veuillez réessayer !")
+    });
+    break;
+  case ".basketPage" :
+    redDot();
+    // Si le panier n'existe pas
+    if (localStorage.getItem("basket") === null) {
+      //Afficher "votre panier est vide"
+      const noBasket = createElementWithClass("div", "noBasket");
+      noBasket.innerHTML = "Votre panier est vide";
+      const products = document.getElementById('products_basket');
+      products.appendChild(noBasket);
+      //Afficher le bouton "voir la boutique" (lien vers la page d'accueil)
+      const shopBtn = createElementWithClass("a", "homeLink");
+      shopBtn.setAttribute("href", "../index.html");
+      shopBtn.innerHTML = "<button class='button'>Voir la boutique</button>";
+      products.appendChild(shopBtn);
+    } else {
+      //Afficher le contenu du panier
+      const products = document.getElementById('products_basket');
+      //Afficher le prix total
+      //Afficher le formulaire pour passer une commande
+      //Afficher le bouton "vider le panier"
+      const clearBasket = createElementWithClass("button", "button clearBasket-button");
+      clearBasket.innerHTML = "Vider mon panier";
+      products.appendChild(clearBasket);
+      let clearBtn = document.querySelector('.clearBasket-button');
+      addConfirmBox(clearBtn, "Etes-vous sûr de vouloir vider votre panier ?");
+    }
+    
+    break;
+  default :
+    console.log("Page inconnue");
+  
 }

@@ -22,6 +22,17 @@
     &:hover {
         color: $primary;
     }
+    &-fill {
+        &::before {
+        content: "1";
+        color: #FFF;
+        position: absolute;
+        font-size: 10px;
+        bottom: 3px;
+        text-align: center;
+        right: 8px;
+        }
+    }
 }
 
 .returnLink {

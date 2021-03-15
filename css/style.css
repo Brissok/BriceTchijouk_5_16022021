@@ -90,7 +90,7 @@ h2 {
     font-size: 1.25em;
   }
 }
-button {
+.button {
   background-color: #0090c5;
   border: none;
   padding: 1em;
@@ -118,6 +118,17 @@ button {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
+.basket_hasProduct::after {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  right: -0.1rem;
+  height: 0.8rem;
+  width: 0.8rem;
+  background: #fb6d72;
+  border-radius: 50%;
+}
+
 .headerContainer {
   text-align: center;
   box-shadow: 0 5px 9px #e5e5e5;
@@ -142,6 +153,15 @@ button {
 }
 .basketLink:hover {
   color: #8f5bfe;
+}
+.basketLink-fill::before {
+  content: "1";
+  color: #FFF;
+  position: absolute;
+  font-size: 10px;
+  bottom: 3px;
+  text-align: center;
+  right: 8px;
 }
 
 .returnLink {
@@ -212,7 +232,7 @@ button {
   margin: 1rem;
   color: #8f5bfe;
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: 1.4em;
 }
 .product-button {
   background-color: #e68a09;
@@ -238,6 +258,10 @@ button {
   .product {
     width: 33%;
   }
+}
+.products_basket {
+  text-align: left;
+  padding-bottom: 3rem;
 }
 
 /*# sourceMappingURL=style.css.map */
