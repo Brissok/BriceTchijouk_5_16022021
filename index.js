@@ -10,18 +10,6 @@ class product {
   }
 }
 
-// Variable globale qui contiendra l'id des produits ajoutés au panier
-function basketExist() {
-  console.log(basket);
-  if (typeof basket === "undefined") {
-  console.log("basket n'est pas déclaré");
-  return false;
-  } else {
-  console.log("besket est déclaré");
-  return true;
-  }
-}
-
 // Fonction pour savoir sur quelle page nous sommes
 /**
  * 
@@ -87,9 +75,15 @@ const addConfirmBox = (element, text) => {
   element.addEventListener('click', function(e) {
     e.preventDefault();
     confirmBox.innerHTML = '<p>' + text + '</p>';
-    confirmBox.innerHTML += '<button id="modal-confirm">Confirmer</button>';
-    confirmBox.innerHTML += '<button id="modal-close">Annuler</button>';
-    modalShow();
+    if (text.includes("vider")) {
+      confirmBox.innerHTML += '<button id="modal-confirm-clear">Confirmer</button>';
+      confirmBox.innerHTML += '<button id="modal-close">Annuler</button>';
+      modalShow();
+    } else {
+      confirmBox.innerHTML += '<button id="modal-confirm">Confirmer</button>';
+      confirmBox.innerHTML += '<button id="modal-close">Annuler</button>';
+      modalShow();
+    }
   });
 
   function modalShow() {
@@ -99,12 +93,43 @@ const addConfirmBox = (element, text) => {
       document.getElementById('modal-close').addEventListener('click', function() {
           modalClose();
       });
-      document.getElementById('modal-confirm').addEventListener('click', function () {
-          console.log('Confirmé !');
-          pushProductInBasket(element);
-          modalClose();
+      if (document.getElementById('modal-confirm-clear') === null) {
+        document.getElementById('modal-confirm').addEventListener('click', function () {
+        console.log('Confirmé !');
+        pushProductInBasket(element);
+        modalClose();
       });
+      } else {
+          document.getElementById('modal-confirm-clear').addEventListener('click', function () {
+          console.log('Panier vidé !');
+          clearBasket();
+          modalClose();
+        });
       }
+      function pushProductInBasket(element) {
+        if (localStorage.getItem('basket') === null) {
+          let basket = [];
+          let id = element.getAttribute('id');
+          basket.push(id);
+          localStorage.setItem('basket', basket);
+          console.log(basket);
+        } else {
+          let basket = localStorage.getItem("basket");
+          let id = element.getAttribute('id');
+          let newBasket = basket.split(",");
+          newBasket.push(id);
+          localStorage.setItem('basket', newBasket);
+          console.log(newBasket);
+        }
+      }
+      function clearBasket() {
+        if (localStorage.getItem('basket') === null) {
+          window.alert("Votre panier ne contient aucun produit !")
+        } else {
+          localStorage.removeItem("basket");
+        }
+      }
+  }
 
   function modalClose() {
       while (modalContainer.hasChildNodes()) {
@@ -114,22 +139,7 @@ const addConfirmBox = (element, text) => {
   }
 }
 
-function pushProductInBasket(element) {
-  if (localStorage.getItem('basket') === null) {
-    let basket = [];
-    let id = element.getAttribute('id');
-    basket.push(id);
-    localStorage.setItem('basket', basket);
-    console.log(basket);
-  } else {
-    let basket = localStorage.getItem("basket");
-    let id = element.getAttribute('id');
-    let newBasket = basket.split(",");
-    newBasket.push(id);
-    localStorage.setItem('basket', newBasket);
-    console.log(newBasket);
-  }
-}
+
 
 
 switch (whichPage()) {
@@ -158,8 +168,8 @@ switch (whichPage()) {
     });
     break;
   case ".basketPage" :
-    let removeBtn = document.querySelector('.removeBasket-button');
-    addConfirmBox(removeBtn, "Etes-vous sûr de vouloir vider votre panier ?");
+    let clearBtn = document.querySelector('.clearBasket-button');
+    addConfirmBox(clearBtn, "Etes-vous sûr de vouloir vider votre panier ?");
     break;
   default :
     console.log("Page inconnue");
