@@ -119,6 +119,9 @@ const addConfirmBox = (element, text) => {
           modalClose();
           //On retire la pastille rouge de l'icône
           redDot();
+          //On retire le contenu du panier
+          let basketTitle = document.querySelector('.basket_title');
+          basketTitle.remove();
           //On retire le bouton "vider le panier"
           let clearBtn = document.querySelector('.clearBasket-button');
           clearBtn.remove();
@@ -142,7 +145,7 @@ const addConfirmBox = (element, text) => {
       function pushProductInBasket(element) {
         //Si le panier n'existe pas
         if (localStorage.getItem('basket') === null) {
-          //Création du panier
+          //Création du panier et du tableau 
           let basket = [];
           //Récupération de l'id du produit et ajout au panier
           let id = element.getAttribute('id');
@@ -212,7 +215,7 @@ function loadProducts (url) {
 
 // Fonction pour ajouter un produit au panier (event listener + confirm box)
 const addToBasketListener = () => {
-  let product = document.querySelectorAll('.product-button');
+  let product = document.querySelectorAll('.product_button');
   product.forEach(
     function(currentValue) {
       addConfirmBox(currentValue, "Ce produit a bien été ajouté à votre panier !");
@@ -239,7 +242,7 @@ const postProducts = (response) => {
     });
     let products = document.getElementById('products');
     products.appendChild(product);
-    let productCard = createProductCard();
+    let productCard = createElementWithClass("div", "product_card");
     product.appendChild(productCard);
     let imageUrl = response[i].imageUrl;
     let name = response[i].name;
@@ -264,7 +267,7 @@ const postProductDetails = (response) => {
   let product = createElementWithClass('div', 'product, product_details');
   let products = document.getElementById('products');
   products.appendChild(product);
-  let productCard = createProductCard();
+  let productCard = createElementWithClass("div", "product_card, product_card--details");
   product.appendChild(productCard);
   let imageUrl = response.imageUrl;
   let name = response.name;
@@ -276,6 +279,43 @@ const postProductDetails = (response) => {
   productCard.appendChild(body);
 }
 
+const createProductBasketBody = (name, price, id) => {
+  let productBody = createElementWithClass('div', 'product_body');
+  let productName = createElementWithClass('h2', 'product_name');
+  let productPrice = createElementWithClass('div', 'product_price');
+  let productButton = createElementWithClass('div', 'basket_trash');
+  productName.textContent = name;
+  productPrice.textContent = price + ' €';
+  productButton.innerHTML = "<i class='fas fa-trash-alt'></i>";
+  productButton.setAttribute('id', id);
+  productBody.appendChild(productName);
+  productBody.appendChild(productButton);
+  productBody.appendChild(productPrice);
+  return productBody;
+}
+
+// Affichage des produits du panier
+/**
+ * 
+ * @param {Array} response
+ * @returns void
+ * 
+ */
+ const postBasketProducts = (response) => {
+  let id = response._id;
+  let product = createElementWithClass('div', 'product, product_details');
+  let products = document.getElementById('products');
+  products.appendChild(product);
+  let productCard = createElementWithClass("div", "product_card, product_card--details");
+  product.appendChild(productCard);
+  let imageUrl = response.imageUrl;
+  let name = response.name;
+  let img = createImgElement(imageUrl, name);
+  productCard.appendChild(img);
+  let price = response.price;
+  let body = createProductBasketBody(name, price, id);
+  productCard.appendChild(body);
+}
 
 // Fonction créant un un élément 'produit'
 /**
@@ -291,18 +331,6 @@ const createProductElement = (id) => {
   return product;
 }
 
-// Fonction créant un élément <div> avec la classe 'product-card'
-/**
- * 
- * 
- * @returns {HTMLElement}
- */
-const createProductCard = () => {
-  let productCard = document.createElement('div');
-  productCard.setAttribute('class', 'product-card');
-  return productCard;
-}
-
 // fonction créant un élément 'image'
 /**
  * 
@@ -312,7 +340,7 @@ const createProductCard = () => {
  */
 const createImgElement = (imageUrl, name) => {
   let img = document.createElement('img');
-  img.setAttribute('class', 'product-img');
+  img.setAttribute('class', 'product_img');
   img.setAttribute('src', imageUrl);
   img.setAttribute('alt', name);
   return img;
@@ -328,11 +356,11 @@ const createImgElement = (imageUrl, name) => {
  * @returns {HTMLElement}
  */
 const createProductBody = (name, description, price, id) => {
-  let productBody = createElementWithClass('div', 'product-body');
-  let productName = createElementWithClass('h2', 'product-name');
-  let productDescription = createElementWithClass('p', 'product-description');
-  let productPrice = createElementWithClass('div', 'product-price');
-  let productButton = createElementWithClass('button', 'product-button');
+  let productBody = createElementWithClass('div', 'product_body');
+  let productName = createElementWithClass('h2', 'product_name');
+  let productDescription = createElementWithClass('p', 'product_description');
+  let productPrice = createElementWithClass('div', 'product_price');
+  let productButton = createElementWithClass('button', 'product_button');
   productName.textContent = name;
   productDescription.textContent = description;
   productPrice.textContent = price + ' €';
@@ -374,7 +402,7 @@ const postBasket = () => {
   // Si le panier n'existe pas
   if (localStorage.getItem("basket") === null) {
     //Afficher "votre panier est vide"
-    const noBasket = createElementWithClass("div", "noBasket");
+    const noBasket = createElementWithClass("h1", "basket_title");
     noBasket.innerHTML = "Votre panier est vide";
     const products = document.getElementById('products');
     products.appendChild(noBasket);
@@ -384,6 +412,10 @@ const postBasket = () => {
     shopBtn.innerHTML = "<button class='button'>Voir la boutique</button>";
     products.appendChild(shopBtn);
   } else {
+    const basketTitle = createElementWithClass("h1", "basket_title");
+    basketTitle.innerHTML = "Récapitulatif de votre panier";
+    const products = document.getElementById('products');
+    products.appendChild(basketTitle);
     //Récupèration du panier sur localStorage
     let basket = localStorage.getItem("basket").split(",");
     //Afficher le contenu du panier
@@ -391,8 +423,7 @@ const postBasket = () => {
       function(currentValue) {
         loadProducts("http://localhost:3000/api/cameras/" + currentValue)
         .then(function(content) {
-          postProductDetails(content);
-          addToBasketListener();
+          postBasketProducts(content);
         })
         .catch(function (err) {
           console.error('Erreur !');
@@ -400,15 +431,30 @@ const postBasket = () => {
           window.alert("Une erreur est survennue, veuillez réessayer !")
         });
       }
-    )
-      
-    const products = document.getElementById('products');
+    );
     //Afficher le prix total
+    setTimeout(function totalPrice() {
+      let prices = document.querySelectorAll('.product_price');
+        console.log(prices);
+        let total = 0;
+        prices.forEach(
+          function(currentValue){
+            let price = parseInt(currentValue.innerText);
+            console.log(price);
+            total += price;
+          }
+        );
+        console.log(total);
+        let totalContainer = createElementWithClass('div', 'basket_price');
+        totalContainer.innerHTML = "<p>Total de votre sélection : " + total + " €";
+        products.appendChild(totalContainer);
+    }, 500);
     //Afficher le formulaire pour passer une commande
+    const formContainer = document.getElementById('basket_form');
     //Afficher le bouton "vider le panier"
     const clearBasket = createElementWithClass("button", "button clearBasket-button");
     clearBasket.innerHTML = "Vider mon panier";
-    products.appendChild(clearBasket);
+    formContainer.appendChild(clearBasket);
     let clearBtn = document.querySelector('.clearBasket-button');
     addConfirmBox(clearBtn, "Etes-vous sûr de vouloir vider votre panier ?");
   }

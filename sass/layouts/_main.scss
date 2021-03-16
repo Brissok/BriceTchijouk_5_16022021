@@ -1,6 +1,7 @@
 .mainContainer {
     text-align: center;
     margin-top: 100px;
+    min-height: 450px;
 }
 
 .products {
@@ -8,24 +9,28 @@
 }
 
 .product {
-    &-card {
+    &_card {
         width: 100%;
         border: solid 2px #CCC;
         margin: 10px 0;
+        &--details {
+            margin-bottom: 1rem;
+            border: solid 2px #CCC;
+        }
     }
-    &-body {
+    &_body {
         padding: 0 1em;
     }
-    &-name {
-        margin: .75rem;
+    &_name {
+        margin: 1rem;
     }
-    &-price {
+    &_price {
         margin: 1rem;
         color: $primary;
         font-weight: bold;
         font-size: 1.4em;
     }
-    &-button {
+    &_button {
         background-color: $secondary;
         color: #fff;
         padding: .5rem;
@@ -49,5 +54,19 @@
 @media #{$medium-up} {
     .product {
         width: 33%;
+        &_card--details {
+            display: flex;
+            flex-direction: row;
+            &>img {
+                max-width: 100px;
+                height: 40%;
+            }
+            &>.product_body{
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                text-align: left;
+            }
+        }
     }
 }
