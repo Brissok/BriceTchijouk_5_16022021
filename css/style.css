@@ -215,13 +215,18 @@ h2 {
 }
 
 .products {
-  margin: 2rem 0;
+  margin: 2rem auto;
+  text-align: -webkit-center;
 }
 
 .product_card {
   width: 100%;
+  max-width: 300px;
   border: solid 2px #CCC;
   margin: 10px 0;
+}
+.product_card > .product_img {
+  min-height: 175px;
 }
 .product_card--details {
   margin-bottom: 1rem;
@@ -267,7 +272,7 @@ h2 {
     display: flex;
     flex-direction: row;
   }
-  .product_card--details > img {
+  .product_card--details > .product_img {
     max-width: 100px;
     height: 40%;
   }

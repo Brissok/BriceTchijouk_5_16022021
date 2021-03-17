@@ -5,19 +5,25 @@
 }
 
 .products {
-    margin: 2rem 0;
+    margin: 2rem auto;
+    text-align: -webkit-center;
 }
 
 .product {
     &_card {
         width: 100%;
+        max-width: 300px;
         border: solid 2px #CCC;
         margin: 10px 0;
+        &>.product_img {
+            min-height: 175px;
+        }
         &--details {
             margin-bottom: 1rem;
             border: solid 2px #CCC;
         }
     }
+    
     &_body {
         padding: 0 1em;
     }
@@ -57,7 +63,7 @@
         &_card--details {
             display: flex;
             flex-direction: row;
-            &>img {
+            &>.product_img {
                 max-width: 100px;
                 height: 40%;
             }

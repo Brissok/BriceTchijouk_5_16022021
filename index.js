@@ -119,19 +119,6 @@ const addConfirmBox = (element, text) => {
           modalClose();
           //On retire la pastille rouge de l'icône
           redDot();
-          //On retire le contenu du panier
-          let basketTitle = document.querySelector('.basket_title');
-          basketTitle.remove();
-          //On retire le bouton "vider le panier"
-          let clearBtn = document.querySelector('.clearBasket-button');
-          clearBtn.remove();
-          //On retire les produits
-          let clearProducts = document.querySelectorAll('.product_details');
-          clearProducts.forEach(
-            function(currentValue) {
-              currentValue.remove();
-            }
-          );
           //On affiche ce qu'il faut en cas de panier vide
           postBasket();
         });
@@ -339,11 +326,12 @@ const createProductElement = (id) => {
  * @returns {HTMLElement}
  */
 const createImgElement = (imageUrl, name) => {
+  let imgContainer = createElementWithClass('div', 'product_img');
   let img = document.createElement('img');
-  img.setAttribute('class', 'product_img');
   img.setAttribute('src', imageUrl);
   img.setAttribute('alt', name);
-  return img;
+  imgContainer.appendChild(img);
+  return imgContainer;
 }
 
 //Fonction créant un élément 'product body'
@@ -401,10 +389,14 @@ function redDot() {
 const postBasket = () => {
   // Si le panier n'existe pas
   if (localStorage.getItem("basket") === null) {
+    const products = document.getElementById('products');
+    products.innerHTML = "";
+    const formContainer = document.getElementById('basket_form');
+    formContainer.innerHTML = "";
     //Afficher "votre panier est vide"
     const noBasket = createElementWithClass("h1", "basket_title");
     noBasket.innerHTML = "Votre panier est vide";
-    const products = document.getElementById('products');
+    
     products.appendChild(noBasket);
     //Afficher le bouton "voir la boutique" (lien vers la page d'accueil)
     const shopBtn = createElementWithClass("a", "homeLink");
@@ -435,16 +427,13 @@ const postBasket = () => {
     //Afficher le prix total
     setTimeout(function totalPrice() {
       let prices = document.querySelectorAll('.product_price');
-        console.log(prices);
         let total = 0;
         prices.forEach(
           function(currentValue){
             let price = parseInt(currentValue.innerText);
-            console.log(price);
             total += price;
           }
         );
-        console.log(total);
         let totalContainer = createElementWithClass('div', 'basket_price');
         totalContainer.innerHTML = "<p>Total de votre sélection : " + total + " €";
         products.appendChild(totalContainer);
