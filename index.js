@@ -1,5 +1,5 @@
 //Création de la classe "product"
-class product {
+class Product {
   constructor(lenses, id, name, price, description, imageUrl) {
     this.lenses = lenses;
     this.id = id;
@@ -182,7 +182,7 @@ const addConfirmBox = (element, text) => {
  * @returns {Promise}
  * 
  */
-function loadProducts (url) {
+async function loadProducts (url) {
   return new Promise(function(resolve, reject) {
     let request = new XMLHttpRequest();
     request.onreadystatechange = function () {
@@ -222,22 +222,23 @@ const addToBasketListener = () => {
  */
 const postProducts = (response) => {
   for (let i = 0 ; i < response.length ; i++) {
-    let id = response[i]._id;
-    let product = createProductElement(id);
-    product.addEventListener('click', function() {
-      productDetails = product.id;
-    });
-    let products = document.getElementById('products');
-    products.appendChild(product);
+    let pName = "p"+i;
+    pName = new Product(
+      response[i].lenses,
+      response[i]._id,
+      response[i].name,
+      response[i].price,
+      response[i].description,
+      response[i].imageUrl
+    );
+    let productsContainer = document.getElementById('products');
+    let product = createProductElement(pName);
+    productsContainer.appendChild(product);
     let productCard = createElementWithClass("div", "product_card");
     product.appendChild(productCard);
-    let imageUrl = response[i].imageUrl;
-    let name = response[i].name;
-    let img = createImgElement(imageUrl, name);
+    let img = createImgElement(pName);
     productCard.appendChild(img);
-    let description = response[i].description;
-    let price = response[i].price;
-    let body = createProductBody(name, description, price, id);
+    let body = createProductBody(pName);
     productCard.appendChild(body);
   }
 }
@@ -250,35 +251,23 @@ const postProducts = (response) => {
  * 
  */
 const postProductDetails = (response) => {
-  let id = response._id;
+  let myProduct = new Product(
+    response.lenses,
+    response._id,
+    response.name,
+    response.price,
+    response.description,
+    response.imageUrl
+  );
   let product = createElementWithClass('div', 'product, product_details');
   let products = document.getElementById('products');
   products.appendChild(product);
   let productCard = createElementWithClass("div", "product_card, product_card--details");
   product.appendChild(productCard);
-  let imageUrl = response.imageUrl;
-  let name = response.name;
-  let img = createImgElement(imageUrl, name);
+  let img = createImgElement(myProduct);
   productCard.appendChild(img);
-  let description = response.description;
-  let price = response.price;
-  let body = createProductBody(name, description, price, id);
+  let body = createProductBody(myProduct);
   productCard.appendChild(body);
-}
-
-const createProductBasketBody = (name, price, id) => {
-  let productBody = createElementWithClass('div', 'product_body');
-  let productName = createElementWithClass('h2', 'product_name');
-  let productPrice = createElementWithClass('div', 'product_price');
-  let productButton = createElementWithClass('div', 'basket_trash');
-  productName.textContent = name;
-  productPrice.textContent = price + ' €';
-  productButton.innerHTML = "<i class='fas fa-trash-alt'></i>";
-  productButton.setAttribute('id', id);
-  productBody.appendChild(productName);
-  productBody.appendChild(productButton);
-  productBody.appendChild(productPrice);
-  return productBody;
 }
 
 // Affichage des produits du panier
@@ -289,47 +278,50 @@ const createProductBasketBody = (name, price, id) => {
  * 
  */
  const postBasketProducts = (response) => {
-  let id = response._id;
+  let myProduct = new Product(
+    response.lenses,
+    response._id,
+    response.name,
+    response.price,
+    response.description,
+    response.imageUrl
+  );
+  let productsContainer = document.getElementById('products');  
   let product = createElementWithClass('div', 'product, product_details');
-  let products = document.getElementById('products');
-  products.appendChild(product);
+  productsContainer.appendChild(product);
   let productCard = createElementWithClass("div", "product_card, product_card--details");
   product.appendChild(productCard);
-  let imageUrl = response.imageUrl;
-  let name = response.name;
-  let img = createImgElement(imageUrl, name);
+  let img = createImgElement(myProduct);
   productCard.appendChild(img);
-  let price = response.price;
-  let body = createProductBasketBody(name, price, id);
+  let body = createProductBasketBody(myProduct);
   productCard.appendChild(body);
 }
 
 // Fonction créant un un élément 'produit'
 /**
  * 
- * @param {objectID} id
+ * @param {object} Product
  * @returns {HTMLElement}
  */
-const createProductElement = (id) => {
+const createProductElement = (Product) => {
   let product = document.createElement('a');
-  product.setAttribute('href', "html/product.html?id=" + id);
+  product.setAttribute('href', "html/product.html?id=" + Product.id);
   product.setAttribute('class', 'product');
-  product.setAttribute('id', id);
+  product.setAttribute('id', Product.id);
   return product;
 }
 
 // fonction créant un élément 'image'
 /**
  * 
- * @param {string} imagUrl
- * @param {string} name
+ * @param {object} Product
  * @returns {HTMLElement}
  */
-const createImgElement = (imageUrl, name) => {
+const createImgElement = (Product) => {
   let imgContainer = createElementWithClass('div', 'product_img');
   let img = document.createElement('img');
-  img.setAttribute('src', imageUrl);
-  img.setAttribute('alt', name);
+  img.setAttribute('src', Product.imageUrl);
+  img.setAttribute('alt', Product.name);
   imgContainer.appendChild(img);
   return imgContainer;
 }
@@ -337,27 +329,45 @@ const createImgElement = (imageUrl, name) => {
 //Fonction créant un élément 'product body'
 /**
  * 
- * @param {string} name
- * @param {string} description
- * @param {string} price
- * @param {objectID} id
+ * @param {object} Product
  * @returns {HTMLElement}
  */
-const createProductBody = (name, description, price, id) => {
+const createProductBody = (Product) => {
   let productBody = createElementWithClass('div', 'product_body');
   let productName = createElementWithClass('h2', 'product_name');
   let productDescription = createElementWithClass('p', 'product_description');
   let productPrice = createElementWithClass('div', 'product_price');
   let productButton = createElementWithClass('button', 'product_button');
-  productName.textContent = name;
-  productDescription.textContent = description;
-  productPrice.textContent = price + ' €';
+  productName.textContent = Product.name;
+  productDescription.textContent = Product.description;
+  productPrice.textContent = Product.price + ' €';
   productButton.textContent = 'Ajouter au panier';
-  productButton.setAttribute('id', id);
+  productButton.setAttribute('id', Product.id);
   productBody.appendChild(productName);
   productBody.appendChild(productDescription);
   productBody.appendChild(productPrice);
   productBody.appendChild(productButton);
+  return productBody;
+}
+
+//Fonction créant un élément 'product body'
+/**
+ * 
+ * @param {object} Product
+ * @returns {HTMLElement}
+ */
+ const createProductBasketBody = (Product) => {
+  let productBody = createElementWithClass('div', 'product_body');
+  let productName = createElementWithClass('h2', 'product_name');
+  let productPrice = createElementWithClass('div', 'product_price');
+  let productButton = createElementWithClass('div', 'basket_trash');
+  productName.textContent = Product.name;
+  productPrice.textContent = Product.price + ' €';
+  productButton.innerHTML = "<i class='fas fa-trash-alt'></i>";
+  productButton.setAttribute('id', Product.id);
+  productBody.appendChild(productName);
+  productBody.appendChild(productButton);
+  productBody.appendChild(productPrice);
   return productBody;
 }
 
@@ -410,22 +420,40 @@ const postBasket = () => {
     products.appendChild(basketTitle);
     //Récupèration du panier sur localStorage
     let basket = localStorage.getItem("basket").split(",");
+    console.log(basket);
+    getBasket(basket);
     //Afficher le contenu du panier
-    basket.forEach(
-      function(currentValue) {
-        loadProducts("http://localhost:3000/api/cameras/" + currentValue)
-        .then(function(content) {
-          postBasketProducts(content);
-        })
-        .catch(function (err) {
-          console.error('Erreur !');
-          console.dir(err);
-          window.alert("Une erreur est survennue, veuillez réessayer !")
-        });
-      }
-    );
+    async function getBasket(basket) {
+      let totalPrice = 0;
+      basket.forEach(
+        function(currentValue) {
+          loadProducts("http://localhost:3000/api/cameras/" + currentValue)
+          .then(function(content) {
+            postBasketProducts(content);
+            totalPrice += content.price;
+          })
+          .catch(function (err) {
+            console.error('Erreur !');
+            console.dir(err);
+            window.alert("Une erreur est survenue, veuillez réessayer !")
+          });
+        }
+      );
+    }
     //Afficher le prix total
-    setTimeout(function totalPrice() {
+    totalPrice();
+    async function totalPrice() {
+      try {
+        getTotalPrice();
+        const getBasketOK = await getBasket(basket);
+        
+        console.log(getBasketOK);
+        
+      } catch (err) {
+        console.log('oups', err);
+      }
+    };
+    function getTotalPrice() {
       let prices = document.querySelectorAll('.product_price');
         let total = 0;
         prices.forEach(
@@ -437,7 +465,7 @@ const postBasket = () => {
         let totalContainer = createElementWithClass('div', 'basket_price');
         totalContainer.innerHTML = "<p>Total de votre sélection : " + total + " €";
         products.appendChild(totalContainer);
-    }, 500);
+    }
     //Afficher le formulaire pour passer une commande
     const formContainer = document.getElementById('basket_form');
     //Afficher le bouton "vider le panier"
@@ -452,15 +480,16 @@ const postBasket = () => {
 switch (whichPage()) {
   case ".homePage" :
     redDot();
-    loadProducts("http://localhost:3000/api/cameras")
-    .then(function(content) {
-      postProducts(content);
-      addToBasketListener();
-    })
-    .catch(function (err) {
-      console.error('Erreur !');
-      console.dir(err);
-    });
+    getListOfProducts();
+    async function getListOfProducts() {
+      try {
+        const content = await loadProducts("http://localhost:3000/api/cameras");
+        postProducts(content);
+        addToBasketListener();
+      } catch (err) {
+        console.log('Erreur !');
+      }
+    }
     break;
   case ".productPage" :
     redDot();
