@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <meta name="description" content="">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Shrikhand&display=swap" rel="stylesheet">
     <link href="../fontawesome/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
@@ -13,7 +14,7 @@
 
 </head>
 <body class="productPage">
-    <header class="container headerContainer">
+    <header class="headerContainer">
         <a href="../index.html" class="returnLink"><i class="fas fa-arrow-left"></i></a>
         <img src="../images/logo-orinoco.png" alt="Logo Onicoro" class="logoSite">
         <a href="./basket.html" class="basketLink" id="basket"><i class="fas fa-shopping-bag"></i></a>
@@ -22,17 +23,27 @@
         <h1 class="mainTitle"></h1>
         <div class="products" id="products">
             <!--Get products here-->
+            <div class="btn-group dropend">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  Lentilles
+                </button>
+                <ul class="dropdown-menu">
+                  <!-- Dropdown menu links -->
+                </ul>
+            </div>
         </div>
     </main>
-    <footer class="container footerContainer">
-        <div class="footer-logo"></div>
+    <footer class="footerContainer">
+        <div class="container">
         <div class="social"></div>
         <ul class="footer-links">
             <li class="footer-link">A propos</li>
             <li class="footer-link">Contact</li>
             <li class="footer-link">Mentions légales</li>
         </ul>
+        </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
     <script src="../index.js"></script>
 </body>
 </html>

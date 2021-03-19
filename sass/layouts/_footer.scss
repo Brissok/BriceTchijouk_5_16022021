@@ -1,8 +1,7 @@
 .footerContainer {
     background-color: #353535;
     color: #fff;
-    padding-top: 26px;
-    padding-bottom: 32px;
+    padding: 20px;
     & svg path {
         fill: #fff;
     }
@@ -20,4 +19,10 @@
         margin-right: 11.5px;
         color: #fff;
         }
+}
+
+@media #{$medium-up} {
+    .footerContainer {
+        padding: 50px;
+    }
 }

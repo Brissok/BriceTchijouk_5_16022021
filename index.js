@@ -232,9 +232,9 @@ const postProducts = (response) => {
       response[i].imageUrl
     );
     let productsContainer = document.getElementById('products');
-    let product = createProductElement(pName);
+    let product = createElementWithClass("div", "product");
     productsContainer.appendChild(product);
-    let productCard = createElementWithClass("div", "product_card");
+    let productCard = createProductCard(pName);
     product.appendChild(productCard);
     let img = createImgElement(pName);
     productCard.appendChild(img);
@@ -259,6 +259,8 @@ const postProductDetails = (response) => {
     response.description,
     response.imageUrl
   );
+  let title = document.querySelector('.mainTitle');
+  title.innerHTML = myProduct.name;
   let product = createElementWithClass('div', 'product, product_details');
   let products = document.getElementById('products');
   products.appendChild(product);
@@ -266,7 +268,7 @@ const postProductDetails = (response) => {
   product.appendChild(productCard);
   let img = createImgElement(myProduct);
   productCard.appendChild(img);
-  let body = createProductBody(myProduct);
+  let body = createProductBodyDetails(myProduct);
   productCard.appendChild(body);
 }
 
@@ -303,10 +305,10 @@ const postProductDetails = (response) => {
  * @param {object} Product
  * @returns {HTMLElement}
  */
-const createProductElement = (Product) => {
+const createProductCard = (Product) => {
   let product = document.createElement('a');
   product.setAttribute('href', "html/product.html?id=" + Product.id);
-  product.setAttribute('class', 'product');
+  product.setAttribute('class', 'product_card');
   product.setAttribute('id', Product.id);
   return product;
 }
@@ -335,15 +337,33 @@ const createImgElement = (Product) => {
 const createProductBody = (Product) => {
   let productBody = createElementWithClass('div', 'product_body');
   let productName = createElementWithClass('h2', 'product_name');
-  let productDescription = createElementWithClass('p', 'product_description');
   let productPrice = createElementWithClass('div', 'product_price');
   let productButton = createElementWithClass('button', 'product_button');
   productName.textContent = Product.name;
-  productDescription.textContent = Product.description;
   productPrice.textContent = Product.price + ' €';
   productButton.textContent = 'Ajouter au panier';
   productButton.setAttribute('id', Product.id);
   productBody.appendChild(productName);
+  productBody.appendChild(productPrice);
+  productBody.appendChild(productButton);
+  return productBody;
+}
+
+//Fonction créant un élément 'product body détaillé'
+/**
+ * 
+ * @param {object} Product
+ * @returns {HTMLElement}
+ */
+ const createProductBodyDetails = (Product) => {
+  let productBody = createElementWithClass('div', 'product_body');
+  let productDescription = createElementWithClass('p', 'product_description');
+  let productPrice = createElementWithClass('div', 'product_price');
+  let productButton = createElementWithClass('button', 'product_button');
+  productDescription.textContent = Product.description;
+  productPrice.textContent = Product.price + ' €';
+  productButton.textContent = 'Ajouter au panier';
+  productButton.setAttribute('id', Product.id);
   productBody.appendChild(productDescription);
   productBody.appendChild(productPrice);
   productBody.appendChild(productButton);

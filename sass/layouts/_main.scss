@@ -10,20 +10,22 @@
 }
 
 .product {
+    padding: 0 5px;
     &_card {
-        width: 100%;
         max-width: 300px;
+        display: block;
+        width: 100%;
         border: solid 2px #CCC;
         margin: 10px 0;
         &>.product_img {
             min-height: 175px;
+            opacity: 0.8;
+            transition: all 300ms;
         }
-        &--details {
-            margin-bottom: 1rem;
-            border: solid 2px #CCC;
+        &:hover>.product_img {
+            opacity: 1;
         }
     }
-    
     &_body {
         padding: 0 1em;
     }
@@ -31,19 +33,26 @@
         margin: 1rem;
     }
     &_price {
-        margin: 1rem;
+        margin: 1rem 1rem 0 1rem;
         color: $primary;
         font-weight: bold;
         font-size: 1.4em;
     }
-    &_button {
-        background-color: $secondary;
-        color: #fff;
-        padding: .5rem;
-        border: none;
-        box-shadow: 0 3px 9px rgba(0, 0, 0, .4);
-        margin-bottom: 1rem;
+}
+
+.product_card--details {
+    margin-bottom: 1rem;
+    &>.product {
+        &_img {
+          max-width: 200px;
+          
+        }
+        &_body {
+            padding: 2em 1em;
+            text-align: left;
+        }
     }
+    
 }
 
 @media #{$small-up} {
@@ -54,24 +63,34 @@
     }
     .product {
         width: 50%;
+        &_card--details {
+            display: flex;
+            flex-direction: row;
+            
+            &>.product_body{
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                justify-content: space-between;
+                text-align: left;
+            }
+        }
     }
 }
 
 @media #{$medium-up} {
     .product {
         width: 33%;
-        &_card--details {
-            display: flex;
-            flex-direction: row;
+        
+    }
+}
+
+@media #{$large-up} {
+    .product {
+        width: 32%;
+        &_card {
             &>.product_img {
-                max-width: 100px;
-                height: 40%;
-            }
-            &>.product_body{
-                display: flex;
-                width: 100%;
-                justify-content: space-between;
-                text-align: left;
+                min-height: 200px;
             }
         }
     }
