@@ -101,12 +101,16 @@ h2 {
 }
 
 .confirm-box {
-  border: 2px solid grey;
+  border: 2px solid #8f5bfe;
   text-align: center;
   padding: 10px;
   width: fit-content;
-  background-color: white;
+  background-color: #f3e9f1;
   margin: auto;
+}
+.confirm-box > p {
+  font-size: 1.3em;
+  margin: 1rem;
 }
 
 #modal {
@@ -117,6 +121,32 @@ h2 {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
+}
+
+.btn {
+  margin: 1rem;
+}
+.btn-modal {
+  color: #fff;
+  background-color: #8f5bfe;
+  border-color: #8f5bfe;
+  opacity: 0.9;
+}
+.btn-orinoco-primary {
+  color: #fff;
+  background-color: #8f5bfe;
+  border-color: #8f5bfe;
+  opacity: 0.9;
+}
+.btn-orinoco-secondary {
+  color: #fff;
+  background-color: #e68a09;
+  border-color: #e68a09;
+  opacity: 0.9;
+}
+.btn:hover {
+  color: #fff;
+  opacity: 1;
 }
 
 .basket_hasProduct::after {
@@ -256,15 +286,23 @@ h2 {
   font-size: 1.4em;
 }
 
-.product_card--details {
-  margin-bottom: 1rem;
+.product_details {
+  padding-bottom: 2rem;
+  text-align: left;
 }
-.product_card--details > .product_img {
+.product_details > .product_img {
+  text-align: center;
+  width: 100%;
+}
+.product_details > .product_img > img {
   max-width: 200px;
 }
-.product_card--details > .product_body {
-  padding: 2em 1em;
-  text-align: left;
+.product_details > .product_price {
+  margin: 1rem;
+}
+.product_details > .product_description {
+  font-size: 1.4em;
+  margin: 1rem;
 }
 
 @media only screen and (min-width: 426px) {
@@ -306,22 +344,23 @@ h2 {
   text-align: left;
   padding-bottom: 3rem;
 }
-
-.basket_trash > i {
+.products_list--item {
+  margin: 1em 0;
+}
+.products_list--item > * {
+  margin: 0;
+}
+.products_list--item > .product_name {
+  font-size: 1.3em;
+  font-weight: 600;
+}
+.products_list--item > .trash > i {
   font-size: 18px;
   color: #7e7e7e;
-  margin: 1rem;
 }
-.basket_trash > i:hover {
+.products_list--item > .trash > i:hover {
   color: #8f5bfe;
   cursor: pointer;
-}
-.basket_price {
-  font-size: large;
-  text-align: right;
-}
-.basket_form {
-  text-align: left;
 }
 
 /*# sourceMappingURL=style.css.map */

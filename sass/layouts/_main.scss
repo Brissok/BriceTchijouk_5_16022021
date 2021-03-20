@@ -40,17 +40,25 @@
     }
 }
 
-.product_card--details {
-    margin-bottom: 1rem;
+.product_details {
+    padding-bottom: 2rem;
+    text-align: left;
     &>.product {
         &_img {
-          max-width: 200px;
-          
+          text-align: center;
+          width: 100%;
+          &>img {
+              max-width: 200px;
+          }
         }
-        &_body {
-            padding: 2em 1em;
-            text-align: left;
+        &_price {
+            margin: 1rem;
         }
+        &_description {
+            font-size: 1.4em;
+            margin: 1rem;
+        }
+        
     }
     
 }

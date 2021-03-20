@@ -1,24 +1,25 @@
-.products_basket {
+.products {
+    &_basket {
     text-align: left;
     padding-bottom: 3rem;
-}
-
-.basket {
-    &_trash>i {
-        font-size: 18px;
-        color: #7e7e7e;
-        margin: 1rem;
-        &:hover {
-            color: $primary;
-            cursor: pointer;
+    }
+    &_list--item {
+        margin: 1em 0;
+        &>*{
+            margin: 0;
         }
-    }
-    &_price {
-        font-size: large;
-        text-align: right;
-    }
-    &_form {
-        text-align: left;
+        &>.product_name {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        &>.trash>i {
+            font-size: 18px;
+            color: #7e7e7e;
+            &:hover {
+                color: $primary;
+                cursor: pointer;
+            }
+        }
     }
 }
     

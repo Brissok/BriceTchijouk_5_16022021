@@ -80,12 +80,12 @@ const addConfirmBox = (element, text) => {
     e.preventDefault();
     confirmBox.innerHTML = '<p>' + text + '</p>';
     if (text.includes("vider")) {
-      confirmBox.innerHTML += '<button id="modal-confirm-clear">Confirmer</button>';
-      confirmBox.innerHTML += '<button id="modal-close">Annuler</button>';
+      confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-confirm-clear">Confirmer</button>';
+      confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-close">Annuler</button>';
       modalShow();
     } else {
-      confirmBox.innerHTML += '<button id="modal-confirm">Confirmer</button>';
-      confirmBox.innerHTML += '<button id="modal-close">Annuler</button>';
+      confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-confirm">Confirmer</button>';
+      confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-close">Annuler</button>';
       modalShow();
     }
     
@@ -202,10 +202,10 @@ async function loadProducts (url) {
 
 // Fonction pour ajouter un produit au panier (event listener + confirm box)
 const addToBasketListener = () => {
-  let product = document.querySelectorAll('.product_button');
+  let product = document.querySelectorAll('.btn-orinoco-secondary');
   product.forEach(
     function(currentValue) {
-      addConfirmBox(currentValue, "Ce produit a bien été ajouté à votre panier !");
+      addConfirmBox(currentValue, "Etes-vous sûr de vouloir ajouter ce produit à votre panier ?");
     });
 }
 
@@ -260,16 +260,18 @@ const postProductDetails = (response) => {
     response.imageUrl
   );
   let title = document.querySelector('.mainTitle');
-  title.innerHTML = myProduct.name;
-  let product = createElementWithClass('div', 'product, product_details');
-  let products = document.getElementById('products');
-  products.appendChild(product);
-  let productCard = createElementWithClass("div", "product_card, product_card--details");
-  product.appendChild(productCard);
+  title.textContent = myProduct.name;
   let img = createImgElement(myProduct);
-  productCard.appendChild(img);
-  let body = createProductBodyDetails(myProduct);
-  productCard.appendChild(body);
+  let price = createElementWithClass('div', 'product_price');
+  price.innerHTML = myProduct.price + " €";
+  let dropdown = createDropdown(myProduct);
+  let description = createElementWithClass('p', 'product_description');
+  description.textContent = myProduct.description;
+  let basketBtn = createElementWithClass('button', 'btn btn-orinoco-secondary');
+  basketBtn.setAttribute('id', myProduct.id);
+  basketBtn.textContent = 'Ajouter au panier';
+  let container = document.getElementById('product_details');
+  container.append(title, img, price, dropdown, description, basketBtn);
 }
 
 // Affichage des produits du panier
@@ -288,15 +290,20 @@ const postProductDetails = (response) => {
     response.description,
     response.imageUrl
   );
-  let productsContainer = document.getElementById('products');  
-  let product = createElementWithClass('div', 'product, product_details');
-  productsContainer.appendChild(product);
-  let productCard = createElementWithClass("div", "product_card, product_card--details");
-  product.appendChild(productCard);
+  let list = document.querySelector(".products_list");
+  let basketItem = createElementWithClass('li', 'products_list--item row');
   let img = createImgElement(myProduct);
-  productCard.appendChild(img);
-  let body = createProductBasketBody(myProduct);
-  productCard.appendChild(body);
+  img.classList.add('col-2');
+  let name = createElementWithClass('p', 'product_name col-4');
+  name.textContent = myProduct.name;
+  let trash = createElementWithClass('div', 'trash col-3');
+  trash.innerHTML = "<i class='fas fa-trash-alt'></i>";
+  let price = createElementWithClass('div', 'product_price col-3');
+  price.innerHTML = myProduct.price + " €";
+  basketItem.append(img, name, trash, price);
+  list.append(basketItem);
+  let productsContainer = document.getElementById('products');
+  productsContainer.appendChild(list);
 }
 
 // Fonction créant un un élément 'produit'
@@ -338,7 +345,7 @@ const createProductBody = (Product) => {
   let productBody = createElementWithClass('div', 'product_body');
   let productName = createElementWithClass('h2', 'product_name');
   let productPrice = createElementWithClass('div', 'product_price');
-  let productButton = createElementWithClass('button', 'product_button');
+  let productButton = createElementWithClass('button', 'btn btn-orinoco-secondary');
   productName.textContent = Product.name;
   productPrice.textContent = Product.price + ' €';
   productButton.textContent = 'Ajouter au panier';
@@ -349,46 +356,27 @@ const createProductBody = (Product) => {
   return productBody;
 }
 
-//Fonction créant un élément 'product body détaillé'
+//Fonction pour créer un menu déroulant
 /**
  * 
  * @param {object} Product
  * @returns {HTMLElement}
  */
- const createProductBodyDetails = (Product) => {
-  let productBody = createElementWithClass('div', 'product_body');
-  let productDescription = createElementWithClass('p', 'product_description');
-  let productPrice = createElementWithClass('div', 'product_price');
-  let productButton = createElementWithClass('button', 'product_button');
-  productDescription.textContent = Product.description;
-  productPrice.textContent = Product.price + ' €';
-  productButton.textContent = 'Ajouter au panier';
-  productButton.setAttribute('id', Product.id);
-  productBody.appendChild(productDescription);
-  productBody.appendChild(productPrice);
-  productBody.appendChild(productButton);
-  return productBody;
-}
-
-//Fonction créant un élément 'product body'
-/**
- * 
- * @param {object} Product
- * @returns {HTMLElement}
- */
- const createProductBasketBody = (Product) => {
-  let productBody = createElementWithClass('div', 'product_body');
-  let productName = createElementWithClass('h2', 'product_name');
-  let productPrice = createElementWithClass('div', 'product_price');
-  let productButton = createElementWithClass('div', 'basket_trash');
-  productName.textContent = Product.name;
-  productPrice.textContent = Product.price + ' €';
-  productButton.innerHTML = "<i class='fas fa-trash-alt'></i>";
-  productButton.setAttribute('id', Product.id);
-  productBody.appendChild(productName);
-  productBody.appendChild(productButton);
-  productBody.appendChild(productPrice);
-  return productBody;
+const createDropdown = (Product) => {
+  let dropEnd = createElementWithClass('div', 'btn-group dropend');
+  let btn = createElementWithClass('button', 'btn btn-secondary dropdown-toggle');
+  btn.setAttribute('data-bs-toggle', 'dropdown');
+  btn.setAttribute('aria-expanded', 'false');
+  btn.innerHTML = "Lentilles";
+  let menu = createElementWithClass('ul', 'dropdown-menu');
+  dropEnd.appendChild(btn);
+  dropEnd.appendChild(menu);
+  for(i = 0 ; i < Product.lenses.length ; i++) {
+    let dropdownItem = document.createElement('li');
+    dropdownItem.innerHTML = "<a class='dropdown-item' href='#'>" + Product.lenses[i] + "</a></li>";
+    menu.appendChild(dropdownItem);
+  }
+  return dropEnd;
 }
 
 //Fonction créant un élément avec une classe
@@ -431,9 +419,10 @@ const postBasket = () => {
     //Afficher le bouton "voir la boutique" (lien vers la page d'accueil)
     const shopBtn = createElementWithClass("a", "homeLink");
     shopBtn.setAttribute("href", "../index.html");
-    shopBtn.innerHTML = "<button class='button'>Voir la boutique</button>";
+    shopBtn.innerHTML = "<button class='btn btn-orinoco-primary'>Voir la boutique</button>";
     products.appendChild(shopBtn);
   } else {
+    //Ajout du titre
     const basketTitle = createElementWithClass("h1", "basket_title");
     basketTitle.innerHTML = "Récapitulatif de votre panier";
     const products = document.getElementById('products');
@@ -443,14 +432,12 @@ const postBasket = () => {
     console.log(basket);
     getBasket(basket);
     //Afficher le contenu du panier
-    async function getBasket(basket) {
-      let totalPrice = 0;
+    function getBasket(basket) {
       basket.forEach(
         function(currentValue) {
           loadProducts("http://localhost:3000/api/cameras/" + currentValue)
           .then(function(content) {
             postBasketProducts(content);
-            totalPrice += content.price;
           })
           .catch(function (err) {
             console.error('Erreur !');
@@ -461,18 +448,7 @@ const postBasket = () => {
       );
     }
     //Afficher le prix total
-    totalPrice();
-    async function totalPrice() {
-      try {
-        getTotalPrice();
-        const getBasketOK = await getBasket(basket);
-        
-        console.log(getBasketOK);
-        
-      } catch (err) {
-        console.log('oups', err);
-      }
-    };
+    
     function getTotalPrice() {
       let prices = document.querySelectorAll('.product_price');
         let total = 0;
@@ -489,13 +465,35 @@ const postBasket = () => {
     //Afficher le formulaire pour passer une commande
     const formContainer = document.getElementById('basket_form');
     //Afficher le bouton "vider le panier"
-    const clearBasket = createElementWithClass("button", "button clearBasket-button");
+    const clearBasket = createElementWithClass("button", "btn btn-orinoco-primary clearBasket-button");
     clearBasket.innerHTML = "Vider mon panier";
     formContainer.appendChild(clearBasket);
     let clearBtn = document.querySelector('.clearBasket-button');
     addConfirmBox(clearBtn, "Etes-vous sûr de vouloir vider votre panier ?");
   }
 }
+
+//Fonction de validation du formulaire
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
 
 switch (whichPage()) {
   case ".homePage" :
