@@ -367,4 +367,12 @@ h2 {
   text-align: left;
 }
 
+.order-link {
+  display: inline-block;
+  margin: 1rem;
+}
+.order-link > button {
+  margin: 0;
+}
+
 /*# sourceMappingURL=style.css.map */

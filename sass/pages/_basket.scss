@@ -26,4 +26,11 @@
 .basket_form {
     text-align: left;
 }
-    
+
+.order-link {
+    display: inline-block;
+    margin: 1rem;
+    &>button {
+        margin: 0;
+    }
+}

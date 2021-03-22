@@ -10,6 +10,17 @@ class Product {
   }
 }
 
+//Création de la classe "contact"
+class Contact {
+  constructor(firstName, lastName, address, city, email) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.address = address;
+    this.city = city;
+    this.email = email;
+  }
+}
+
 // Fonction pour savoir sur quelle page nous sommes
 /**
  * 
@@ -197,6 +208,19 @@ async function loadProducts (url) {
   });
 }
 
+//Fonction d'envoio des éléments de commande
+/**
+ * 
+ * @param {Object} contact 
+ * @param {Array} basket 
+ * @returns 
+ */
+async function postOrder (contact) {
+    let request = new XMLHttpRequest();
+    request.open("POST", "http://localhost:3000/api/cameras/order");
+    request.setRequestHeader("Content-Type", "application/json");
+    request.send(JSON.stringify(contact));
+}
 
 /** EVENT LISTENERS */
 
@@ -475,25 +499,36 @@ const postBasket = () => {
 
 //Fonction de validation du formulaire
 // Example starter JavaScript for disabling form submissions if there are invalid fields
-(function () {
+function checkFormValidity() {
   'use strict'
 
   // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  var forms = document.querySelectorAll('.needs-validation')
+  var form = document.querySelector('.needs-validation');
 
-  // Loop over them and prevent submission
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
-        }
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
 
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
+      form.classList.add('was-validated');
+      getContact();
+    }, false)
+
+}
+
+//Fonction récupération des infos dans l'objet contact
+const getContact = () => {
+  let firstName = document.getElementById("first-name").value;
+  let lastName = document.getElementById("last-name").value;
+  let address = document.getElementById("number").value + " " + document.getElementById("road").value;
+  let city = document.getElementById("city").value;
+  let email = document.getElementById("email").value;
+  let contact = new Contact(firstName, lastName, address, city, email);
+  return contact;
+}
+
+
 
 switch (whichPage()) {
   case ".homePage" :
@@ -526,7 +561,11 @@ switch (whichPage()) {
   case ".basketPage" :
     redDot();
     postBasket();
+    checkFormValidity();
     break;
+  case ".orderPage" :
+    redDot();
+
   default :
     console.log("Page inconnue");
   

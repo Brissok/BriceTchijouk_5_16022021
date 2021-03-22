@@ -26,40 +26,54 @@
             </ul>
         </div>
         <div class="basket_form" id="basket_form">
-            <form class="row g-3 needs-validation" novalidate>
+            <form class="row g-3 needs-validation" action="../html/order.html" novalidate>
                 <div class="col-md-4">
-                  <label for="validationCustom01" class="form-label">First name</label>
-                  <input type="text" class="form-control" id="validationCustom01" required>
+                  <label for="first-name" class="form-label">First name</label>
+                  <input type="text" class="form-control" id="first-name" pattern="[A-Za-zÀ-ÿ](([\-]?[a-zA-Z0-9]+)*)" required>
                   <div class="valid-feedback">
                     OK !
                   </div>
                 </div>
                 <div class="col-md-4">
-                  <label for="validationCustom02" class="form-label">Last name</label>
-                  <input type="text" class="form-control" id="validationCustom02" required>
+                  <label for="last-name" class="form-label">Last name</label>
+                  <input type="text" class="form-control" id="last-name" pattern="[A-Za-zÀ-ÿ](([\-|\s|\\']?[a-zA-Z0-9]+)*)" required>
                   <div class="valid-feedback">
                     OK !
                   </div>
                 </div>
                 <div class="col-md-4">
-                  <label for="validationCustomUsername" class="form-label">Email</label>
+                  <label for="email" class="form-label">Email</label>
                   <div class="input-group has-validation">
-                    <input type="email" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
+                    <input type="email" class="form-control" id="email" aria-describedby="inputGroupPrepend" pattern="[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([_\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})" required>
                     <div class="invalid-feedback">
                       L'email est incorrecte.
                     </div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <label for="validationCustom03" class="form-label">Adresse</label>
-                  <input type="text" class="form-control" id="validationCustom03" required>
+                <div class="col-md-2">
+                  <label for="number" class="form-label">N°</label>
+                  <input type="text" class="form-control" id="number" pattern="[0-9]{1,6}" required>
+                  <div class="invalid-feedback">
+                    Merci de renseigner un numéro valide.
+                  </div>
+                </div>
+                <div class="col-md-10">
+                  <label for="road" class="form-label">Voie</label>
+                  <input type="text" class="form-control" id="road" pattern="[A-Za-z0-9](([\s\-\']?[a-zA-Z0-9]+)*)" required>
                   <div class="invalid-feedback">
                     Merci de renseigner votre adresse.
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <label for="validationCustom03" class="form-label">Ville</label>
-                  <input type="text" class="form-control" id="validationCustom03" required>
+                <div class="col-md-2">
+                  <label for="post-code" class="form-label">Code Postal</label>
+                  <input type="text" class="form-control" id="post-code" pattern="[0-9]{5}" required>
+                  <div class="invalid-feedback">
+                    Merci de renseigner votre code postal.
+                  </div>
+                </div>
+                <div class="col-md-7">
+                  <label for="city" class="form-label">Ville</label>
+                  <input type="text" class="form-control" id="city" pattern="[A-Za-zÀ-ÿ](([\-|\s|\\']?[a-zA-Z0-9]+)*)" required>
                   <div class="invalid-feedback">
                     Merci de renseigner une ville.
                   </div>
@@ -76,7 +90,7 @@
                   </div>
                 </div>
                 <div class="col-12">
-                  <button class="btn btn-orinoco-primary" type="submit">Commander</button>
+                    <button class="btn btn-orinoco-primary">Commander</button>
                 </div>
               </form>
         </div>
