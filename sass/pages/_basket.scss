@@ -3,6 +3,9 @@
     text-align: left;
     padding-bottom: 3rem;
     }
+    &_list {
+        margin: 2rem;
+    }
     &_list--item {
         margin: 1em 0;
         &>*{
@@ -23,8 +26,26 @@
     }
 }
 
-.basket_form {
-    text-align: left;
+.basket {
+    &_price {
+        color: #8f5bfe;
+        font-weight: bold;
+        font-size: 1.4em;
+        margin: 0 2rem;
+        &>p:first-child {
+            color: initial;
+            text-align: right;
+        }
+    }
+    &_form {
+        text-align: left;
+        padding-top: 2rem;
+    }
+}
+
+.form_title {
+    font-size: 1.5em;
+    margin-bottom: 1.5rem;
 }
 
 .order-link {

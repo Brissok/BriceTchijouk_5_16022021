@@ -344,6 +344,9 @@ h2 {
   text-align: left;
   padding-bottom: 3rem;
 }
+.products_list {
+  margin: 2rem;
+}
 .products_list--item {
   margin: 1em 0;
 }
@@ -363,8 +366,24 @@ h2 {
   cursor: pointer;
 }
 
+.basket_price {
+  color: #8f5bfe;
+  font-weight: bold;
+  font-size: 1.4em;
+  margin: 0 2rem;
+}
+.basket_price > p:first-child {
+  color: initial;
+  text-align: right;
+}
 .basket_form {
   text-align: left;
+  padding-top: 2rem;
+}
+
+.form_title {
+  font-size: 1.5em;
+  margin-bottom: 1.5rem;
 }
 
 .order-link {

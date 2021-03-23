@@ -154,14 +154,13 @@ const addConfirmBox = (element, text) => {
         } //Si le panier existe
           else {
           //On récupère le panier sur le localStorage et le transforme en tableau
-          let basket = localStorage.getItem("basket");
-          let newBasket = basket.split(",");
+          let basket = localStorage.getItem("basket").split(",");
           //Récupération de l'id du produit et ajout au panier
           let id = element.getAttribute('id');
-          newBasket.push(id);
+          basket.push(id);
           //Sauvegarde du panier sur LocalStorage
-          localStorage.setItem('basket', newBasket);
-          console.log(newBasket);
+          localStorage.setItem('basket', basket);
+          console.log(basket);
           }
       }
       //Fonction permettant de vider le panier
@@ -451,41 +450,55 @@ const postBasket = () => {
     basketTitle.innerHTML = "Récapitulatif de votre panier";
     const products = document.getElementById('products');
     products.appendChild(basketTitle);
+
     //Récupèration du panier sur localStorage
     let basket = localStorage.getItem("basket").split(",");
     console.log(basket);
     getBasket(basket);
-    //Afficher le contenu du panier
-    function getBasket(basket) {
-      basket.forEach(
-        function(currentValue) {
-          loadProducts("http://localhost:3000/api/cameras/" + currentValue)
-          .then(function(content) {
-            postBasketProducts(content);
-          })
-          .catch(function (err) {
-            console.error('Erreur !');
-            console.dir(err);
-            window.alert("Une erreur est survenue, veuillez réessayer !")
-          });
-        }
-      );
+
+    //Afficher le contenu du panier et le prix total
+    async function getBasket(basket) {
+      if (basket) {
+        let prices = [];
+        let reqFinished = 0;
+        basket.forEach(
+          function(currentValue) {
+            loadProducts("http://localhost:3000/api/cameras/" + currentValue)
+            .then(function(content) {
+              postBasketProducts(content);
+              prices.push(content.price);
+              reqFinished++;
+              if(reqFinished===basket.length) {
+                getTotalPrice();
+              };
+            })
+            .catch(function (err) {
+              console.error('Erreur !');
+              console.dir(err);
+              window.alert("Une erreur est survenue, veuillez réessayer !")
+            });
+          }
+        );
+      }
+     
     }
     //Afficher le prix total
     
     function getTotalPrice() {
       let prices = document.querySelectorAll('.product_price');
         let total = 0;
+
         prices.forEach(
           function(currentValue){
             let price = parseInt(currentValue.innerText);
             total += price;
           }
         );
-        let totalContainer = createElementWithClass('div', 'basket_price');
-        totalContainer.innerHTML = "<p>Total de votre sélection : " + total + " €";
+        let totalContainer = createElementWithClass('div', 'basket_price row');
+        totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total + " €</p>";
         products.appendChild(totalContainer);
     }
+
     //Afficher le formulaire pour passer une commande
     const formContainer = document.getElementById('basket_form');
     //Afficher le bouton "vider le panier"
