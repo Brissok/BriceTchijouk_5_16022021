@@ -207,19 +207,37 @@ async function loadProducts (url) {
   });
 }
 
+//Création de la classe "body"
+class Body {
+  constructor(contact, products) {
+    this.contact = contact;
+    this.products = products;
+  }
+}
+
 //Fonction d'envoio des éléments de commande
 /**
  * 
- * @param {Object} contact 
- * @param {Array} basket 
  * @returns 
  */
-async function postOrder (contact) {
-    let request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:3000/api/cameras/order");
-    request.setRequestHeader("Content-Type", "application/json");
-    request.send(JSON.stringify(contact));
+ async function sendOrder() {
+
+  let contact = getContact();
+  let products = getProducts();
+  let body = new Body(contact, products);
+
+  fetch('http://localhost:3000/api/cameras/order', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body)
+  })
+  .then(res => res.json())
+  .then(res => console.log(res))
+  .catch(e => console.log(e));
 }
+
 
 /** EVENT LISTENERS */
 
@@ -426,6 +444,53 @@ function redDot() {
     }
 }
 
+//Fonction pour afficher le prix total du panier
+function getTotalPrice() {
+  let prices = document.querySelectorAll('.product_price');
+    let total = 0;
+
+    prices.forEach(
+      function(currentValue){
+        let price = parseInt(currentValue.innerText);
+        total += price;
+      }
+    );
+    let totalContainer = createElementWithClass('div', 'basket_price row');
+    totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total + " €</p>";
+    products.appendChild(totalContainer);
+}
+
+//Fonction pour afficher le contenu du panier et le prix total
+/**
+ * 
+ * @param {Array} basket
+ */
+async function getBasket(basket) {
+  if (basket) {
+    let prices = [];
+    let reqFinished = 0;
+    basket.forEach(
+      function(currentValue) {
+        loadProducts("http://localhost:3000/api/cameras/" + currentValue)
+        .then(function(content) {
+          postBasketProducts(content);
+          prices.push(content.price);
+          reqFinished++;
+          if(reqFinished===basket.length) {
+            getTotalPrice();
+          };
+        })
+        .catch(function (err) {
+          console.error('Erreur !');
+          console.dir(err);
+          window.alert("Une erreur est survenue, veuillez réessayer !")
+        });
+      }
+    );
+  }
+ 
+}
+
 //Fonction pour afficher le panier
 const postBasket = () => {
   // Si le panier n'existe pas
@@ -454,53 +519,13 @@ const postBasket = () => {
     //Récupèration du panier sur localStorage
     let basket = localStorage.getItem("basket").split(",");
     console.log(basket);
-    getBasket(basket);
 
     //Afficher le contenu du panier et le prix total
-    async function getBasket(basket) {
-      if (basket) {
-        let prices = [];
-        let reqFinished = 0;
-        basket.forEach(
-          function(currentValue) {
-            loadProducts("http://localhost:3000/api/cameras/" + currentValue)
-            .then(function(content) {
-              postBasketProducts(content);
-              prices.push(content.price);
-              reqFinished++;
-              if(reqFinished===basket.length) {
-                getTotalPrice();
-              };
-            })
-            .catch(function (err) {
-              console.error('Erreur !');
-              console.dir(err);
-              window.alert("Une erreur est survenue, veuillez réessayer !")
-            });
-          }
-        );
-      }
-     
-    }
-    //Afficher le prix total
-    
-    function getTotalPrice() {
-      let prices = document.querySelectorAll('.product_price');
-        let total = 0;
-
-        prices.forEach(
-          function(currentValue){
-            let price = parseInt(currentValue.innerText);
-            total += price;
-          }
-        );
-        let totalContainer = createElementWithClass('div', 'basket_price row');
-        totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total + " €</p>";
-        products.appendChild(totalContainer);
-    }
+    getBasket(basket);
 
     //Afficher le formulaire pour passer une commande
     const formContainer = document.getElementById('basket_form');
+
     //Afficher le bouton "vider le panier"
     const clearBasket = createElementWithClass("button", "btn btn-orinoco-primary clearBasket-button");
     clearBasket.innerHTML = "Vider mon panier";
@@ -531,6 +556,10 @@ function checkFormValidity() {
 }
 
 //Fonction récupération des infos dans l'objet contact
+/**
+ * 
+ * @returns {Object} contact
+ */
 const getContact = () => {
   let firstName = document.getElementById("first-name").value;
   let lastName = document.getElementById("last-name").value;
@@ -540,6 +569,19 @@ const getContact = () => {
   let contact = new Contact(firstName, lastName, address, city, email);
   return contact;
 }
+
+const getProducts = () => {
+  let products = localStorage.getItem("basket").split(",");
+  return products;
+}
+
+//Création de la classe "products"
+class Products {
+  constructor(products) {
+    this.products = products;
+  }
+}
+
 
 
 
