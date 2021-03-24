@@ -1,12 +1,23 @@
+/** CREATION DES CLASSES */
+
 //Création de la classe "product"
 class Product {
-  constructor(lenses, id, name, price, description, imageUrl) {
+  constructor(lenses, id, name, price, description, imageUrl, quantity) {
     this.lenses = lenses;
     this.id = id;
     this.name = name;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
+    this.quantity = quantity;
+  }
+}
+
+//Création de la classe "BasketProduct"
+class BasketProduct {
+  constructor(id, quantity) {
+    this.id = id;
+    this.quantity = quantity;
   }
 }
 
@@ -20,6 +31,23 @@ class Contact {
     this.email = email;
   }
 }
+
+//Création de la classe "products"
+class Products {
+  constructor(products) {
+    this.products = products;
+  }
+}
+
+//Création de la classe "body"
+class Body {
+  constructor(contact, products) {
+    this.contact = contact;
+    this.products = products;
+  }
+}
+
+/** FONCTIONS GLOBALES */
 
 // Fonction pour savoir sur quelle page nous sommes
 /**
@@ -71,6 +99,103 @@ const getId = () => {
   };
 }
 
+//Fonction pour modifier le prix
+/**
+ * 
+ * @param {string} price 
+ * @returns {Number} 
+ */
+const priceTransform = (price) => {
+  if (Number.isNaN(Number.parseFloat(price))) {
+    return 0;
+  }
+  return parseFloat(price) * 0.01  ;
+}
+
+//fonction permettant d'ajouter un produit au panier
+/**
+ * 
+ * @param {HTMLElement} element 
+ */
+ function pushProductInBasket(element) {
+  //Si le panier n'existe pas
+  if (localStorage.getItem('basket') === null) {
+    //Création du panier et du tableau produit 
+    let basket = [];
+    let product = [];
+    //Récupération de l'id du produit et ajout au panier
+    let id = element.getAttribute('id');
+    product.push(id);
+    //Ajout de la quantité
+    let quantity = 1;
+    product.push(quantity);
+    //Ajout du tableau produit dans le panier
+    basket.push(product);
+    //Sauvegarde du panier sur LocalStorage
+    localStorage.setItem('basket', basket);
+    console.log(basket);
+  } //Si le panier existe
+    else {
+    //On récupère le panier sur le localStorage et le transforme en tableau
+    let basket = localStorage.getItem("basket").split(",");
+    //Récupération de l'id du produit et ajout au panier
+    let id = element.getAttribute('id');
+    if(basket.includes(id)) {
+      let idx = basket.indexOf(id);
+      basket[idx += 1]++;
+    } else {
+      let product = [];
+      //Récupération de l'id du produit et ajout au panier
+      let id = element.getAttribute('id');
+      product.push(id);
+      //Ajout de la quantité
+      let quantity = 1;
+      product.push(quantity);
+      //Ajout du tableau produit dans le panier
+      basket.push(product);
+    }
+    //Sauvegarde du panier sur LocalStorage
+    localStorage.setItem('basket', basket);
+    console.log(basket);
+    }
+}
+
+//Fonction permettant de vider le panier
+function clearBasket() {
+  if (localStorage.getItem('basket') === null) {
+    window.alert("Votre panier ne contient aucun produit !")
+  } else {
+    localStorage.removeItem("basket");
+  }
+}
+
+//Fonction permettant de retirer un produit du panier
+/**
+ * 
+ * @param {HTMLElement} element 
+ */
+function removeProduct(element) {
+  //On récupère le panier sur le localStorage et le transforme en tableau
+  let basket = localStorage.getItem("basket").split(",");
+
+  if(basket.length===2) {
+    localStorage.removeItem('basket');
+    postBasket();
+  } else {
+    //Récupération de l'id du produit
+    let id = element.getAttribute('id');
+    //Récupération de l'index de l'id dans le tableau panier
+    let idx = basket.indexOf(id);
+    //Retrait du produit et de la quantité du panier
+    basket.splice(idx, 2);
+    //Renvoi du nouveau panier sur le LocalStorage
+    localStorage.setItem('basket', basket);
+    //Retrait du produit de la page
+    element.parentElement.remove();
+    }
+}
+
+
 /** LES BOITES MODALES */
 
 //Fonction pour ajouter une boîte modale de confirmation
@@ -94,13 +219,17 @@ const addConfirmBox = (element, text) => {
       confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-confirm-clear">Confirmer</button>';
       confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-close">Annuler</button>';
       modalShow();
+    } else if (text.includes("retirer")) {
+      confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-confirm-remove">Confirmer</button>';
+      confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-close">Annuler</button>';
+      modalShow();
     } else {
       confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-confirm">Confirmer</button>';
       confirmBox.innerHTML += '<button class="btn btn-modal" id="modal-close">Annuler</button>';
       modalShow();
     }
-    
   });
+
   //Fonction pour afficher la boîte modale
   function modalShow() {
       modalContainer.appendChild(confirmBox);
@@ -109,69 +238,46 @@ const addConfirmBox = (element, text) => {
       document.getElementById('modal-close').addEventListener('click', function() {
           modalClose();
       });
-      //Si c'est la boîte modale pour confirmer l'ajout au panier
-      if (document.getElementById('modal-confirm-clear') === null) {
+      //Si c'est la boîte modale pour vider le panier
+      if (document.getElementById('modal-confirm-clear')) {
+        document.getElementById('modal-confirm-clear').addEventListener('click', function () {
+        console.log('Panier vidé !');
+        //On vide le panier
+        clearBasket();
+        //On ferme la boîte modale
+        modalClose();
+        //On retire la pastille rouge de l'icône
+        redDot();
+        //On affiche ce qu'il faut en cas de panier vide
+        postBasket();
+        });
+      }//Sinon si c'est la boîte modale pour retirer un produit
+        else if (document.getElementById('modal-confirm-remove')) {
+          document.getElementById('modal-confirm-remove').addEventListener('click', function () {
+          console.log('Produit retiré !');
+          //On retire le produit
+          removeProduct(element);
+          //On ferme la boîte modale
+          modalClose();
+          //On retire la pastille rouge si le panier est vide
+          redDot();
+          //On affiche le nouveau prix
+          if(localStorage.getItem('basket')){
+            getTotalPrice();
+          }
+          });
+      } else { 
         document.getElementById('modal-confirm').addEventListener('click', function () {
-        console.log('Confirmé !');
+        console.log('Produit ajouté !');
         //On ajoute le produit au panier
         pushProductInBasket(element);
         //On ferme la boîte modale
         modalClose();
         //On ajoute la pastille rouge sur l'icône si elle n'y est pas
         redDot();
-      });
-      }//Sinon (boîte modale pour vider le panier)
-       else {
-          document.getElementById('modal-confirm-clear').addEventListener('click', function () {
-          console.log('Panier vidé !');
-          //On vide le panier
-          clearBasket();
-          //On ferme la boîte modale
-          modalClose();
-          //On retire la pastille rouge de l'icône
-          redDot();
-          //On affiche ce qu'il faut en cas de panier vide
-          postBasket();
         });
       }
-      
-      //fonction permettant d'ajouter un produit au panier
-      /**
-       * 
-       * @param {HTMLElement} element 
-       */
-      function pushProductInBasket(element) {
-        //Si le panier n'existe pas
-        if (localStorage.getItem('basket') === null) {
-          //Création du panier et du tableau 
-          let basket = [];
-          //Récupération de l'id du produit et ajout au panier
-          let id = element.getAttribute('id');
-          basket.push(id);
-          //Sauvegarde du panier sur LocalStorage
-          localStorage.setItem('basket', basket);
-          console.log(basket);
-        } //Si le panier existe
-          else {
-          //On récupère le panier sur le localStorage et le transforme en tableau
-          let basket = localStorage.getItem("basket").split(",");
-          //Récupération de l'id du produit et ajout au panier
-          let id = element.getAttribute('id');
-          basket.push(id);
-          //Sauvegarde du panier sur LocalStorage
-          localStorage.setItem('basket', basket);
-          console.log(basket);
-          }
-      }
-      //Fonction permettant de vider le panier
-      function clearBasket() {
-        if (localStorage.getItem('basket') === null) {
-          window.alert("Votre panier ne contient aucun produit !")
-        } else {
-          localStorage.removeItem("basket");
-        }
-      }
-  }
+    }
   //Fonction pour fermer la boîte modale
   function modalClose() {
       while (modalContainer.hasChildNodes()) {
@@ -205,14 +311,6 @@ async function loadProducts (url) {
     request.open('GET', url);
     request.send();
   });
-}
-
-//Création de la classe "body"
-class Body {
-  constructor(contact, products) {
-    this.contact = contact;
-    this.products = products;
-  }
 }
 
 //Fonction d'envoio des éléments de commande
@@ -304,7 +402,7 @@ const postProductDetails = (response) => {
   title.textContent = myProduct.name;
   let img = createImgElement(myProduct);
   let price = createElementWithClass('div', 'product_price');
-  price.innerHTML = myProduct.price + " €";
+  price.innerHTML = priceTransform(myProduct.price).toFixed(2) + " €";
   let dropdown = createDropdown(myProduct);
   let description = createElementWithClass('p', 'product_description');
   description.textContent = myProduct.description;
@@ -322,30 +420,56 @@ const postProductDetails = (response) => {
  * @returns void
  * 
  */
- const postBasketProducts = (response) => {
-  let myProduct = new Product(
-    response.lenses,
-    response._id,
-    response.name,
-    response.price,
-    response.description,
-    response.imageUrl
-  );
-  let list = document.querySelector(".products_list");
-  let basketItem = createElementWithClass('li', 'products_list--item row');
-  let img = createImgElement(myProduct);
-  img.classList.add('col-2');
-  let name = createElementWithClass('p', 'product_name col-4');
-  name.textContent = myProduct.name;
-  let trash = createElementWithClass('div', 'trash col-3');
-  trash.innerHTML = "<i class='fas fa-trash-alt'></i>";
-  let price = createElementWithClass('div', 'product_price col-3');
-  price.innerHTML = myProduct.price + " €";
-  basketItem.append(img, name, trash, price);
-  list.append(basketItem);
-  let productsContainer = document.getElementById('products');
-  productsContainer.appendChild(list);
+ const postBasketProducts = (response, quantity) => {
+    if(response && quantity) {
+      let myProduct = new Product(
+        response.lenses,
+        response._id,
+        response.name,
+        response.price,
+        response.description,
+        response.imageUrl,
+        quantity
+      );
+      let list = document.querySelector(".products_list");
+      let basketItem = createElementWithClass('li', 'products_list--item row');
+      let img = createImgElement(myProduct);
+      img.classList.add('col-2');
+      let name = createElementWithClass('p', 'product_name col-2');
+      name.textContent = myProduct.name;
+      
+      //Ajout de la quantité
+      let qContainer = createElementWithClass('div', 'col-2')
+      let q = createElementWithClass('select', 'product_quantity');
+      q.innerHTML = "<option>"+quantity+"</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option>";
+      qContainer.appendChild(q);
+      q.addEventListener('change', (e) => {
+        quantity = e.target.value;
+        getPrice(quantity)
+        getTotalPrice()
+        
+      })
+    
+      let trash = createElementWithClass('div', 'trash col-3');
+      trash.setAttribute('id', myProduct.id);
+      trash.innerHTML = "<i class='fas fa-trash-alt'></i>";
+      addConfirmBox(trash, "Voulez-vous retirer ce produit de votre panier ?");
+
+      let price = createElementWithClass('div', 'product_price col-3');
+
+      //Fonction pour récupérer le prix
+      const getPrice = (quantity) => {
+        price.innerHTML = priceTransform(myProduct.price * quantity).toFixed(2) + " €";
+      }
+      getPrice(quantity);
+
+      basketItem.append(img, name, qContainer, trash, price);
+      list.append(basketItem);
+      let productsContainer = document.getElementById('products');
+      productsContainer.appendChild(list);
+    }
 }
+  
 
 // Fonction créant un un élément 'produit'
 /**
@@ -388,7 +512,7 @@ const createProductBody = (Product) => {
   let productPrice = createElementWithClass('div', 'product_price');
   let productButton = createElementWithClass('button', 'btn btn-orinoco-secondary');
   productName.textContent = Product.name;
-  productPrice.textContent = Product.price + ' €';
+  productPrice.textContent = priceTransform(Product.price).toFixed(2) + ' €';
   productButton.textContent = 'Ajouter au panier';
   productButton.setAttribute('id', Product.id);
   productBody.appendChild(productName);
@@ -444,20 +568,27 @@ function redDot() {
     }
 }
 
+
+
 //Fonction pour afficher le prix total du panier
 function getTotalPrice() {
+  
   let prices = document.querySelectorAll('.product_price');
-    let total = 0;
-
-    prices.forEach(
-      function(currentValue){
-        let price = parseInt(currentValue.innerText);
-        total += price;
-      }
-    );
+  let total = 0;
+  prices.forEach(
+    function(currentValue){
+      let price = parseInt(currentValue.innerText);
+      total += price;
+    }
+  );
+  if(document.querySelector('.basket_price')===null) {
     let totalContainer = createElementWithClass('div', 'basket_price row');
-    totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total + " €</p>";
+    totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total.toFixed(2) + " €</p>";
     products.appendChild(totalContainer);
+  } else {
+    let totalContainer = document.querySelector('.basket_price');
+    totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total.toFixed(2) + " €</p>";
+  }
 }
 
 //Fonction pour afficher le contenu du panier et le prix total
@@ -465,15 +596,15 @@ function getTotalPrice() {
  * 
  * @param {Array} basket
  */
-async function getBasket(basket) {
-  if (basket) {
+function getBasket(basket, quantities) {
+  if (basket && quantities) {
     let prices = [];
     let reqFinished = 0;
-    basket.forEach(
-      function(currentValue) {
-        loadProducts("http://localhost:3000/api/cameras/" + currentValue)
+    for(i = 0 ; i<basket.length ; i++) {
+      let q = quantities[i];
+      loadProducts("http://localhost:3000/api/cameras/" + basket[i])
         .then(function(content) {
-          postBasketProducts(content);
+          postBasketProducts(content, q);
           prices.push(content.price);
           reqFinished++;
           if(reqFinished===basket.length) {
@@ -485,8 +616,7 @@ async function getBasket(basket) {
           console.dir(err);
           window.alert("Une erreur est survenue, veuillez réessayer !")
         });
-      }
-    );
+    }
   }
  
 }
@@ -502,7 +632,6 @@ const postBasket = () => {
     //Afficher "votre panier est vide"
     const noBasket = createElementWithClass("h1", "basket_title");
     noBasket.innerHTML = "Votre panier est vide";
-    
     products.appendChild(noBasket);
     //Afficher le bouton "voir la boutique" (lien vers la page d'accueil)
     const shopBtn = createElementWithClass("a", "homeLink");
@@ -517,14 +646,16 @@ const postBasket = () => {
     products.appendChild(basketTitle);
 
     //Récupèration du panier sur localStorage
-    let basket = localStorage.getItem("basket").split(",");
+    const basket = localStorage.getItem("basket").split(",").filter(word => word.length > 2);
     console.log(basket);
-
+    const quantities = localStorage.getItem("basket").split(",").filter(word => word.length < 3);
+    console.log(quantities);
     //Afficher le contenu du panier et le prix total
-    getBasket(basket);
+    getBasket(basket, quantities);
 
     //Afficher le formulaire pour passer une commande
     const formContainer = document.getElementById('basket_form');
+    checkFormValidity();
 
     //Afficher le bouton "vider le panier"
     const clearBasket = createElementWithClass("button", "btn btn-orinoco-primary clearBasket-button");
@@ -575,15 +706,6 @@ const getProducts = () => {
   return products;
 }
 
-//Création de la classe "products"
-class Products {
-  constructor(products) {
-    this.products = products;
-  }
-}
-
-
-
 
 switch (whichPage()) {
   case ".homePage" :
@@ -616,7 +738,6 @@ switch (whichPage()) {
   case ".basketPage" :
     redDot();
     postBasket();
-    checkFormValidity();
     break;
   case ".orderPage" :
     redDot();
