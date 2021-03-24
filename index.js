@@ -318,7 +318,7 @@ async function loadProducts (url) {
  * 
  * @returns 
  */
- async function sendOrder() {
+function sendOrder() {
 
   let contact = getContact();
   let products = getProducts();
@@ -332,8 +332,44 @@ async function loadProducts (url) {
     body: JSON.stringify(body)
   })
   .then(res => res.json())
-  .then(res => console.log(res))
+  .then(res => localStorage.setItem('res', res))
   .catch(e => console.log(e));
+}
+
+//Fonction récupération des infos dans l'objet contact
+/**
+ * 
+ * @returns {Object} contact
+ */
+ const getContact = () => {
+  let firstName = document.getElementById("first-name").value;
+  let lastName = document.getElementById("last-name").value;
+  let address = document.getElementById("number").value + " " + document.getElementById("road").value;
+  let city = document.getElementById("city").value;
+  let email = document.getElementById("email").value;
+  let contact = new Contact(firstName, lastName, address, city, email);
+  return contact;
+}
+
+//Fonction récupération du tableau products à envoyer au serveur
+/**
+ * 
+ * @returns {Array} products
+ */
+const getProducts = () => {
+  //Récupèration du panier sur localStorage avec séparation des ids et des quantités
+  const basket = localStorage.getItem("basket").split(",").filter(word => word.length > 2);
+  console.log(basket);
+  const quantities = localStorage.getItem("basket").split(",").filter(word => word.length < 3);
+  console.log(quantities);
+  //Push des ids dans le tableau products en fonction de la quantité
+  var products = [];
+  for(i=0 ; i<basket.length; i++) {
+    for(j = 0; j < Number.parseFloat(quantities[i]) ; j++) {
+      products.push(basket[i]);
+    }
+  }
+  return products;
 }
 
 
@@ -445,11 +481,16 @@ const postProductDetails = (response) => {
       qContainer.appendChild(q);
       q.addEventListener('change', (e) => {
         quantity = e.target.value;
-        getPrice(quantity)
-        getTotalPrice()
-        
+        getPrice(quantity);
+        getTotalPrice();
+        let basket = localStorage.getItem('basket').split(',');
+        let idx = basket.indexOf(myProduct.id);
+        basket[idx += 1] = quantity;
+        console.log(basket);
+        localStorage.setItem('basket', basket);
       })
-    
+      
+      //Ajout de la poubelle pour retirer un produit du panier
       let trash = createElementWithClass('div', 'trash col-3');
       trash.setAttribute('id', myProduct.id);
       trash.innerHTML = "<i class='fas fa-trash-alt'></i>";
@@ -569,7 +610,6 @@ function redDot() {
 }
 
 
-
 //Fonction pour afficher le prix total du panier
 function getTotalPrice() {
   
@@ -655,7 +695,7 @@ const postBasket = () => {
 
     //Afficher le formulaire pour passer une commande
     const formContainer = document.getElementById('basket_form');
-    checkFormValidity();
+    //checkFormValidity();
 
     //Afficher le bouton "vider le panier"
     const clearBasket = createElementWithClass("button", "btn btn-orinoco-primary clearBasket-button");
@@ -684,26 +724,6 @@ function checkFormValidity() {
       getContact();
     }, false)
 
-}
-
-//Fonction récupération des infos dans l'objet contact
-/**
- * 
- * @returns {Object} contact
- */
-const getContact = () => {
-  let firstName = document.getElementById("first-name").value;
-  let lastName = document.getElementById("last-name").value;
-  let address = document.getElementById("number").value + " " + document.getElementById("road").value;
-  let city = document.getElementById("city").value;
-  let email = document.getElementById("email").value;
-  let contact = new Contact(firstName, lastName, address, city, email);
-  return contact;
-}
-
-const getProducts = () => {
-  let products = localStorage.getItem("basket").split(",");
-  return products;
 }
 
 
@@ -741,7 +761,7 @@ switch (whichPage()) {
     break;
   case ".orderPage" :
     redDot();
-
+    break;
   default :
     console.log("Page inconnue");
   
