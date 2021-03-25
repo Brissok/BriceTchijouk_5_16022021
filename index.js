@@ -313,13 +313,15 @@ async function loadProducts (url) {
   });
 }
 
-//Fonction d'envoio des éléments de commande
+//Fonction d'envoi des éléments de commande
 /**
  * 
  * @returns 
  */
-function sendOrder() {
-
+async function sendOrder() {
+  if(localStorage.getItem('orderId')){
+    localStorage.removeItem('orderId')
+  }
   let contact = getContact();
   let products = getProducts();
   let body = new Body(contact, products);
@@ -332,7 +334,8 @@ function sendOrder() {
     body: JSON.stringify(body)
   })
   .then(res => res.json())
-  .then(res => localStorage.setItem('res', res))
+  .then(res => {console.log(res);localStorage.setItem('orderId', res.orderId)})
+  
   .catch(e => console.log(e));
 }
 
@@ -359,9 +362,7 @@ function sendOrder() {
 const getProducts = () => {
   //Récupèration du panier sur localStorage avec séparation des ids et des quantités
   const basket = localStorage.getItem("basket").split(",").filter(word => word.length > 2);
-  console.log(basket);
   const quantities = localStorage.getItem("basket").split(",").filter(word => word.length < 3);
-  console.log(quantities);
   //Push des ids dans le tableau products en fonction de la quantité
   var products = [];
   for(i=0 ; i<basket.length; i++) {
@@ -621,6 +622,7 @@ function getTotalPrice() {
       total += price;
     }
   );
+  localStorage.setItem('orderPrice', total.toFixed(2));
   if(document.querySelector('.basket_price')===null) {
     let totalContainer = createElementWithClass('div', 'basket_price row');
     totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total.toFixed(2) + " €</p>";
@@ -661,6 +663,18 @@ function getBasket(basket, quantities) {
  
 }
 
+//Fonction pour envoyer les infos avant de soumettre le formumlaire
+async function onSubmit(){
+  var form = document.querySelector('.needs-validation');
+  if(form.checkValidity()){
+    sendOrder();
+    localStorage.removeItem('basket');
+  return true;
+  } else {
+    return false;
+  }
+}
+
 //Fonction pour afficher le panier
 const postBasket = () => {
   // Si le panier n'existe pas
@@ -695,7 +709,7 @@ const postBasket = () => {
 
     //Afficher le formulaire pour passer une commande
     const formContainer = document.getElementById('basket_form');
-    //checkFormValidity();
+    checkFormValidity();
 
     //Afficher le bouton "vider le panier"
     const clearBasket = createElementWithClass("button", "btn btn-orinoco-primary clearBasket-button");
@@ -715,13 +729,13 @@ function checkFormValidity() {
   var form = document.querySelector('.needs-validation');
 
     form.addEventListener('submit', function (event) {
+      
       if (!form.checkValidity()) {
         event.preventDefault()
         event.stopPropagation()
-      }
-
+      } 
       form.classList.add('was-validated');
-      getContact();
+      
     }, false)
 
 }
@@ -761,6 +775,14 @@ switch (whichPage()) {
     break;
   case ".orderPage" :
     redDot();
+    //Affichage du prix total
+    let orderPrice = localStorage.getItem('orderPrice');
+    let price = document.querySelector(".order_price");
+    price.textContent = orderPrice + ' €';
+    //Affichage de l'id de commande
+    let orderId = localStorage.getItem('orderId');
+    let textId = document.querySelector(".order_id");
+    textId.textContent = orderId;
     break;
   default :
     console.log("Page inconnue");

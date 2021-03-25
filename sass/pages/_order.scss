@@ -1,0 +1,12 @@
+.order {
+    padding: 2rem;
+    text-align: left;
+    &_title {
+        margin: 1rem 0;
+    }
+    &_price, &_id {
+        color: #8f5bfe;
+        font-weight: bold;
+        font-size: 1.4em;
+    }
+}

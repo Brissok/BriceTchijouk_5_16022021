@@ -398,4 +398,17 @@ h2 {
   margin: 0;
 }
 
+.order {
+  padding: 2rem;
+  text-align: left;
+}
+.order_title {
+  margin: 1rem 0;
+}
+.order_price, .order_id {
+  color: #8f5bfe;
+  font-weight: bold;
+  font-size: 1.4em;
+}
+
 /*# sourceMappingURL=style.css.map */
