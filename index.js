@@ -318,7 +318,7 @@ async function loadProducts (url) {
  * 
  * @returns 
  */
-async function sendOrder() {
+function sendOrder() {
   if(localStorage.getItem('orderId')){
     localStorage.removeItem('orderId')
   }
@@ -334,7 +334,12 @@ async function sendOrder() {
     body: JSON.stringify(body)
   })
   .then(res => res.json())
-  .then(res => {console.log(res);localStorage.setItem('orderId', res.orderId)})
+  .then(res => {
+    console.log(res);
+    localStorage.setItem('orderId', res.orderId);
+    let form = document.querySelector('.needs-validation');
+    form.submit();
+  })
   
   .catch(e => console.log(e));
 }
@@ -663,18 +668,6 @@ function getBasket(basket, quantities) {
  
 }
 
-//Fonction pour envoyer les infos avant de soumettre le formumlaire
-async function onSubmit(){
-  var form = document.querySelector('.needs-validation');
-  if(form.checkValidity()){
-    sendOrder();
-    localStorage.removeItem('basket');
-  return true;
-  } else {
-    return false;
-  }
-}
-
 //Fonction pour afficher le panier
 const postBasket = () => {
   // Si le panier n'existe pas
@@ -721,19 +714,23 @@ const postBasket = () => {
 }
 
 //Fonction de validation du formulaire
-// Example starter JavaScript for disabling form submissions if there are invalid fields
 function checkFormValidity() {
-  'use strict'
 
-  // Fetch all the forms we want to apply custom Bootstrap validation styles to
   var form = document.querySelector('.needs-validation');
+  var formBtn = document.querySelector('.btn-order');
 
-    form.addEventListener('submit', function (event) {
+    formBtn.addEventListener('click', function (event) {
       
       if (!form.checkValidity()) {
         event.preventDefault()
         event.stopPropagation()
-      } 
+      } else {
+        event.preventDefault()
+        event.stopPropagation()
+        sendOrder()
+
+      }
+      
       form.classList.add('was-validated');
       
     }, false)
