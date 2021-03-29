@@ -67,7 +67,7 @@ const whichPage = () => {
           onPage = ".orderPage";
           page = document.querySelector(onPage);
           if (page == null) {
-            window.alert("Page inconnu");
+            window.alert("Page inconnue");
           } else {
             return onPage;
             }
@@ -85,9 +85,7 @@ const whichPage = () => {
 //Fonction pour récupérer l'id passé dans l'URL de la page
 /**
  * 
- * 
  * @returns {string}
- * 
  */
 const getId = () => {
   let searchParams = new URLSearchParams(window.location.search);
@@ -125,38 +123,42 @@ const priceTransform = (price) => {
     let product = [];
     //Récupération de l'id du produit et ajout au panier
     let id = element.getAttribute('id');
-    product.push(id);
-    //Ajout de la quantité
-    let quantity = 1;
-    product.push(quantity);
-    //Ajout du tableau produit dans le panier
-    basket.push(product);
-    //Sauvegarde du panier sur LocalStorage
-    localStorage.setItem('basket', basket);
-    console.log(basket);
-  } //Si le panier existe
-    else {
-    //On récupère le panier sur le localStorage et le transforme en tableau
-    let basket = localStorage.getItem("basket").split(",");
-    //Récupération de l'id du produit et ajout au panier
-    let id = element.getAttribute('id');
-    if(basket.includes(id)) {
-      let idx = basket.indexOf(id);
-      basket[idx += 1]++;
-    } else {
-      let product = [];
-      //Récupération de l'id du produit et ajout au panier
-      let id = element.getAttribute('id');
+    if(id) {
       product.push(id);
       //Ajout de la quantité
       let quantity = 1;
       product.push(quantity);
       //Ajout du tableau produit dans le panier
       basket.push(product);
+      //Sauvegarde du panier sur LocalStorage
+      localStorage.setItem('basket', basket);
+      console.log(basket);
     }
-    //Sauvegarde du panier sur LocalStorage
-    localStorage.setItem('basket', basket);
-    console.log(basket);
+  } //Si le panier existe
+    else {
+    //On récupère le panier sur le localStorage et le transforme en tableau
+    let basket = localStorage.getItem("basket").split(",");
+    //Récupération de l'id du produit et ajout au panier
+    let id = element.getAttribute('id');
+    if(id) {
+      if(basket.includes(id)) {
+        let idx = basket.indexOf(id);
+        basket[idx += 1]++;
+      } else {
+        let product = [];
+        //Récupération de l'id du produit et ajout au panier
+        let id = element.getAttribute('id');
+        product.push(id);
+        //Ajout de la quantité
+        let quantity = 1;
+        product.push(quantity);
+        //Ajout du tableau produit dans le panier
+        basket.push(product);
+      }
+      //Sauvegarde du panier sur LocalStorage
+      localStorage.setItem('basket', basket);
+      console.log(basket);
+      }
     }
 }
 
@@ -175,24 +177,33 @@ function clearBasket() {
  * @param {HTMLElement} element 
  */
 function removeProduct(element) {
+  if(element) {
   //On récupère le panier sur le localStorage et le transforme en tableau
   let basket = localStorage.getItem("basket").split(",");
-
-  if(basket.length===2) {
-    localStorage.removeItem('basket');
-    postBasket();
-  } else {
-    //Récupération de l'id du produit
-    let id = element.getAttribute('id');
-    //Récupération de l'index de l'id dans le tableau panier
-    let idx = basket.indexOf(id);
-    //Retrait du produit et de la quantité du panier
-    basket.splice(idx, 2);
-    //Renvoi du nouveau panier sur le LocalStorage
-    localStorage.setItem('basket', basket);
-    //Retrait du produit de la page
-    element.parentElement.remove();
+  if(basket) {
+    if(basket.length===2) {
+      localStorage.removeItem('basket');
+      postBasket();
+    } else {
+      //Récupération de l'id du produit
+      let id = element.getAttribute('id');
+      if(id){
+        //Récupération de l'index de l'id dans le tableau panier
+        let idx = basket.indexOf(id);
+        if(idx){
+          //Retrait du produit et de la quantité du panier
+          basket.splice(idx, 2);
+          //Renvoi du nouveau panier sur le LocalStorage
+          localStorage.setItem('basket', basket);
+          //Retrait du produit de la page
+          element.parentElement.remove();
+        } else {
+          window.alert("Ce produit n'est pas présent dans votre panier");
+        }
+      }
+      }
     }
+  }
 }
 
 
@@ -205,10 +216,10 @@ function removeProduct(element) {
  * @param {string} text 
  */
 const addConfirmBox = (element, text) => {
-  var modalContainer = document.createElement('div');
+  let modalContainer = document.createElement('div');
   modalContainer.setAttribute('id', 'modal');
 
-  var confirmBox = document.createElement('div');
+  let confirmBox = document.createElement('div');
   confirmBox.className = 'confirm-box';
 
   // Affichage boîte de confirmation
@@ -319,35 +330,45 @@ async function loadProducts (url) {
  * @returns 
  */
 function sendOrder() {
+  //Si un orderId est enregistré on le supprime
   if(localStorage.getItem('orderId')){
     localStorage.removeItem('orderId')
   }
+  //On récupère les informations à envoyer
   let contact = getContact();
   let products = getProducts();
-  let body = new Body(contact, products);
 
-  fetch('http://localhost:3000/api/cameras/order', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body)
-  })
-  .then(res => res.json())
-  .then(res => {
-    console.log(res);
-    localStorage.setItem('orderId', res.orderId);
-    let form = document.querySelector('.needs-validation');
-    form.submit();
-  })
-  
-  .catch(e => console.log(e));
+  //Vérification des types de contact et products avant l'envoi
+  if(Array.isArray(products) && (contact instanceof Contact)) {
+    //Si contact et products sont du bon type on crée la variable body qui sera envoyée
+    let body = new Body(contact, products);
+
+    fetch('http://localhost:3000/api/cameras/order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body)
+    })
+    .then(res => res.json())
+    .then(res => {
+      //Envoi de l'orderId sur le LocalStorage
+      localStorage.setItem('orderId', res.orderId);
+      //On soumet le formulaire
+      let form = document.querySelector('.needs-validation');
+      form.submit();
+      //On vide le panier
+      localStorage.removeItem('basket');
+    })
+
+    .catch(e => console.log(e));
+  }
 }
 
 //Fonction récupération des infos dans l'objet contact
 /**
  * 
- * @returns {Object} contact
+ * @returns {InstanceType} Contact
  */
  const getContact = () => {
   let firstName = document.getElementById("first-name").value;
@@ -365,17 +386,19 @@ function sendOrder() {
  * @returns {Array} products
  */
 const getProducts = () => {
-  //Récupèration du panier sur localStorage avec séparation des ids et des quantités
-  const basket = localStorage.getItem("basket").split(",").filter(word => word.length > 2);
-  const quantities = localStorage.getItem("basket").split(",").filter(word => word.length < 3);
-  //Push des ids dans le tableau products en fonction de la quantité
-  var products = [];
-  for(i=0 ; i<basket.length; i++) {
-    for(j = 0; j < Number.parseFloat(quantities[i]) ; j++) {
-      products.push(basket[i]);
+  if(localStorage.getItem('basket')) {
+    //Récupèration du panier sur localStorage avec séparation des ids et des quantités
+    const basket = localStorage.getItem("basket").split(",").filter(word => word.length > 2);
+    const quantities = localStorage.getItem("basket").split(",").filter(word => word.length < 3);
+    //Push des ids dans le tableau products en fonction de la quantité
+    var products = [];
+    for(i=0 ; i<basket.length; i++) {
+      for(j = 0; j < Number.parseFloat(quantities[i]) ; j++) {
+        products.push(basket[i]);
+      }
     }
+    return products;
   }
-  return products;
 }
 
 
@@ -445,7 +468,7 @@ const postProductDetails = (response) => {
   let img = createImgElement(myProduct);
   let price = createElementWithClass('div', 'product_price');
   price.innerHTML = priceTransform(myProduct.price).toFixed(2) + " €";
-  let dropdown = createDropdown(myProduct);
+  let dropdown = createSelectLenses(myProduct);
   let description = createElementWithClass('p', 'product_description');
   description.textContent = myProduct.description;
   let basketBtn = createElementWithClass('button', 'btn btn-orinoco-secondary');
@@ -459,6 +482,7 @@ const postProductDetails = (response) => {
 /**
  * 
  * @param {Array} response
+ * @param {String} quantity
  * @returns void
  * 
  */
@@ -473,6 +497,7 @@ const postProductDetails = (response) => {
         response.imageUrl,
         quantity
       );
+      //Création des éléments HTML pour l'image et le nom du produit
       let list = document.querySelector(".products_list");
       let basketItem = createElementWithClass('li', 'products_list--item row');
       let img = createImgElement(myProduct);
@@ -480,36 +505,43 @@ const postProductDetails = (response) => {
       let name = createElementWithClass('p', 'product_name col-2');
       name.textContent = myProduct.name;
       
-      //Ajout de la quantité
+      //Création du "select menu" avec la quantité
       let qContainer = createElementWithClass('div', 'col-2')
       let q = createElementWithClass('select', 'product_quantity');
       q.innerHTML = "<option>"+quantity+"</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option>";
       qContainer.appendChild(q);
+      //Ajout EventListener sur le select 
       q.addEventListener('change', (e) => {
+        //On récupère la quantité choisie
         quantity = e.target.value;
+        //On modifie le prix
         getPrice(quantity);
+        //On modifie le prix total du panier
         getTotalPrice();
+        //On récupère le panier sur le localStorage
         let basket = localStorage.getItem('basket').split(',');
+        //On modifie la quantité du produit correspondant
         let idx = basket.indexOf(myProduct.id);
         basket[idx += 1] = quantity;
-        console.log(basket);
+        //On enregistre le nouveau panier
         localStorage.setItem('basket', basket);
       })
       
-      //Ajout de la poubelle pour retirer un produit du panier
+      //Création de la poubelle pour retirer un produit du panier
       let trash = createElementWithClass('div', 'trash col-3');
       trash.setAttribute('id', myProduct.id);
       trash.innerHTML = "<i class='fas fa-trash-alt'></i>";
       addConfirmBox(trash, "Voulez-vous retirer ce produit de votre panier ?");
 
+      //Ajout du prix
       let price = createElementWithClass('div', 'product_price col-3');
-
-      //Fonction pour récupérer le prix
-      const getPrice = (quantity) => {
-        price.innerHTML = priceTransform(myProduct.price * quantity).toFixed(2) + " €";
-      }
+        //Fonction pour récupérer le prix
+        const getPrice = (quantity) => {
+          price.innerHTML = priceTransform(myProduct.price * quantity).toFixed(2) + " €";
+        }
       getPrice(quantity);
 
+      //Affichage des éléments sur la page
       basketItem.append(img, name, qContainer, trash, price);
       list.append(basketItem);
       let productsContainer = document.getElementById('products');
@@ -518,10 +550,10 @@ const postProductDetails = (response) => {
 }
   
 
-// Fonction créant un un élément 'produit'
+// Fonction créant un un élément HTML 'product_card'
 /**
  * 
- * @param {object} Product
+ * @param {InstanceType} Product
  * @returns {HTMLElement}
  */
 const createProductCard = (Product) => {
@@ -535,7 +567,7 @@ const createProductCard = (Product) => {
 // fonction créant un élément 'image'
 /**
  * 
- * @param {object} Product
+ * @param {InstanceType} Product
  * @returns {HTMLElement}
  */
 const createImgElement = (Product) => {
@@ -550,7 +582,7 @@ const createImgElement = (Product) => {
 //Fonction créant un élément 'product body'
 /**
  * 
- * @param {object} Product
+ * @param {InstanceType} Product
  * @returns {HTMLElement}
  */
 const createProductBody = (Product) => {
@@ -571,24 +603,19 @@ const createProductBody = (Product) => {
 //Fonction pour créer un menu déroulant
 /**
  * 
- * @param {object} Product
+ * @param {InstanceType} Product
  * @returns {HTMLElement}
  */
-const createDropdown = (Product) => {
-  let dropEnd = createElementWithClass('div', 'btn-group dropend');
-  let btn = createElementWithClass('button', 'btn btn-secondary dropdown-toggle');
-  btn.setAttribute('data-bs-toggle', 'dropdown');
-  btn.setAttribute('aria-expanded', 'false');
-  btn.innerHTML = "Lentilles";
-  let menu = createElementWithClass('ul', 'dropdown-menu');
-  dropEnd.appendChild(btn);
-  dropEnd.appendChild(menu);
+const createSelectLenses = (Product) => {
+  let select = createElementWithClass('select', 'form-select');
+  select.innerHTML = "<option selected>Choisissez une lentilles</option>";
   for(i = 0 ; i < Product.lenses.length ; i++) {
-    let dropdownItem = document.createElement('li');
-    dropdownItem.innerHTML = "<a class='dropdown-item' href='#'>" + Product.lenses[i] + "</a></li>";
-    menu.appendChild(dropdownItem);
+    let option = document.createElement('option');
+    option.setAttribute('value', i);
+    option.innerHTML = Product.lenses[i];
+    select.appendChild(option);
   }
-  return dropEnd;
+  return select;
 }
 
 //Fonction créant un élément avec une classe
@@ -618,16 +645,19 @@ function redDot() {
 
 //Fonction pour afficher le prix total du panier
 function getTotalPrice() {
-  
+  //On récupère le tableau des prix des produits du panier
   let prices = document.querySelectorAll('.product_price');
   let total = 0;
+  //On parcourt le tableau et on ajoute chaque prix à la variable "total"
   prices.forEach(
     function(currentValue){
       let price = parseInt(currentValue.innerText);
       total += price;
     }
   );
+  //Enregistrement du prix total sur le localStorage
   localStorage.setItem('orderPrice', total.toFixed(2));
+  //On affiche le prix total ou on le met à jour s'il existe déjà
   if(document.querySelector('.basket_price')===null) {
     let totalContainer = createElementWithClass('div', 'basket_price row');
     totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total.toFixed(2) + " €</p>";
@@ -642,6 +672,7 @@ function getTotalPrice() {
 /**
  * 
  * @param {Array} basket
+ * @param {Array} quantities
  */
 function getBasket(basket, quantities) {
   if (basket && quantities) {

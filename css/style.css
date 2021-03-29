@@ -160,6 +160,10 @@ h2 {
   border-radius: 50%;
 }
 
+.form-select {
+  width: auto;
+}
+
 .headerContainer {
   text-align: center;
   box-shadow: 0 5px 9px #e5e5e5;
