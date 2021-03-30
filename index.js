@@ -501,8 +501,8 @@ const postProductDetails = (response) => {
       let list = document.querySelector(".products_list");
       let basketItem = createElementWithClass('li', 'products_list--item row');
       let img = createImgElement(myProduct);
-      img.classList.add('col-2');
-      let name = createElementWithClass('p', 'product_name col-2');
+      img.classList.add('col-4', 'col-sm-2');
+      let name = createElementWithClass('p', 'product_name col-6 col-sm-3');
       name.textContent = myProduct.name;
       
       //Création du "select menu" avec la quantité
@@ -528,13 +528,13 @@ const postProductDetails = (response) => {
       })
       
       //Création de la poubelle pour retirer un produit du panier
-      let trash = createElementWithClass('div', 'trash col-3');
+      let trash = createElementWithClass('div', 'trash col-sm-2');
       trash.setAttribute('id', myProduct.id);
       trash.innerHTML = "<i class='fas fa-trash-alt'></i>";
       addConfirmBox(trash, "Voulez-vous retirer ce produit de votre panier ?");
 
       //Ajout du prix
-      let price = createElementWithClass('div', 'product_price col-3');
+      let price = createElementWithClass('div', 'product_price col-sm-3');
         //Fonction pour récupérer le prix
         const getPrice = (quantity) => {
           price.innerHTML = priceTransform(myProduct.price * quantity).toFixed(2) + " €";
@@ -660,11 +660,11 @@ function getTotalPrice() {
   //On affiche le prix total ou on le met à jour s'il existe déjà
   if(document.querySelector('.basket_price')===null) {
     let totalContainer = createElementWithClass('div', 'basket_price row');
-    totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total.toFixed(2) + " €</p>";
+    totalContainer.innerHTML = "<p class='col-sm-9'>Total de votre sélection :</p><p class='col-sm-3'>" + total.toFixed(2) + " €</p>";
     products.appendChild(totalContainer);
   } else {
     let totalContainer = document.querySelector('.basket_price');
-    totalContainer.innerHTML = "<p class='col-md-9'>Total de votre sélection :</p><p class='col-md-3'>" + total.toFixed(2) + " €</p>";
+    totalContainer.innerHTML = "<p class='col-sm-9'>Total de votre sélection :</p><p class='col-sm-3'>" + total.toFixed(2) + " €</p>";
   }
 }
 
@@ -675,7 +675,7 @@ function getTotalPrice() {
  * @param {Array} quantities
  */
 function getBasket(basket, quantities) {
-  if (basket && quantities) {
+  if (Array.isArray(basket) && Array.isArray(quantities)) {
     let prices = [];
     let reqFinished = 0;
     for(i = 0 ; i<basket.length ; i++) {
@@ -696,7 +696,6 @@ function getBasket(basket, quantities) {
         });
     }
   }
- 
 }
 
 //Fonction pour afficher le panier
@@ -746,26 +745,19 @@ const postBasket = () => {
 
 //Fonction de validation du formulaire
 function checkFormValidity() {
-
   var form = document.querySelector('.needs-validation');
   var formBtn = document.querySelector('.btn-order');
-
-    formBtn.addEventListener('click', function (event) {
-      
-      if (!form.checkValidity()) {
-        event.preventDefault()
-        event.stopPropagation()
-      } else {
-        event.preventDefault()
-        event.stopPropagation()
-        sendOrder()
-
-      }
-      
-      form.classList.add('was-validated');
-      
-    }, false)
-
+  formBtn.addEventListener('click', function (event) {
+    if (!form.checkValidity()) {
+      event.preventDefault()
+      event.stopPropagation()
+    } else {
+      event.preventDefault()
+      event.stopPropagation()
+      sendOrder()
+    }
+    form.classList.add('was-validated');
+  }, false)
 }
 
 

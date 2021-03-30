@@ -358,7 +358,7 @@ h2 {
   margin: 0;
 }
 .products_list--item > .product_name {
-  font-size: 1.3em;
+  font-size: 1.1em;
   font-weight: 600;
 }
 .products_list--item > .trash > i {
@@ -383,6 +383,8 @@ h2 {
 .basket_price > p:first-child {
   color: initial;
   text-align: right;
+  font-size: 0.85em;
+  line-height: 1.9;
 }
 .basket_form {
   text-align: left;
@@ -402,6 +404,16 @@ h2 {
   margin: 0;
 }
 
+@media only screen and (max-width: 575px) {
+  .basket_price > p:last-child {
+    text-align: end;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .products_list--item > .product_name {
+    font-size: 1.4em;
+  }
+}
 .order {
   padding: 2rem;
   text-align: left;
