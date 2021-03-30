@@ -115,7 +115,7 @@ const priceTransform = (price) => {
  * 
  * @param {HTMLElement} element 
  */
- function pushProductInBasket(element) {
+const pushProductInBasket = (element) => {
   //Si le panier n'existe pas
   if (localStorage.getItem('basket') === null) {
     //Création du panier et du tableau produit 
@@ -163,7 +163,7 @@ const priceTransform = (price) => {
 }
 
 //Fonction permettant de vider le panier
-function clearBasket() {
+const clearBasket = () => {
   if (localStorage.getItem('basket') === null) {
     window.alert("Votre panier ne contient aucun produit !")
   } else {
@@ -176,7 +176,7 @@ function clearBasket() {
  * 
  * @param {HTMLElement} element 
  */
-function removeProduct(element) {
+const removeProduct = (element) => {
   if(element) {
   //On récupère le panier sur le localStorage et le transforme en tableau
   let basket = localStorage.getItem("basket").split(",");
@@ -329,7 +329,7 @@ async function loadProducts (url) {
  * 
  * @returns 
  */
-function sendOrder() {
+const sendOrder = () => {
   //Si un orderId est enregistré on le supprime
   if(localStorage.getItem('orderId')){
     localStorage.removeItem('orderId')
@@ -486,7 +486,7 @@ const postProductDetails = (response) => {
  * @returns void
  * 
  */
- const postBasketProducts = (response, quantity) => {
+const postBasketProducts = (response, quantity) => {
     if(response && quantity) {
       let myProduct = new Product(
         response.lenses,
@@ -632,7 +632,7 @@ const createElementWithClass = (element, className) => {
 }
 
 //Fonction pour afficher la pastille sur le panier
-function redDot() {
+const redDot = () => {
   const basketIcon = document.getElementById('basket');
   //Si le panier est vide 
   if (localStorage.getItem("basket") === null && basketIcon.classList.contains("basket_hasProduct")) {
@@ -644,7 +644,7 @@ function redDot() {
 
 
 //Fonction pour afficher le prix total du panier
-function getTotalPrice() {
+const getTotalPrice = () => {
   //On récupère le tableau des prix des produits du panier
   let prices = document.querySelectorAll('.product_price');
   let total = 0;
@@ -674,7 +674,7 @@ function getTotalPrice() {
  * @param {Array} basket
  * @param {Array} quantities
  */
-function getBasket(basket, quantities) {
+const getBasket = (basket, quantities) => {
   if (Array.isArray(basket) && Array.isArray(quantities)) {
     let prices = [];
     let reqFinished = 0;
@@ -744,7 +744,7 @@ const postBasket = () => {
 }
 
 //Fonction de validation du formulaire
-function checkFormValidity() {
+const checkFormValidity = () => {
   var form = document.querySelector('.needs-validation');
   var formBtn = document.querySelector('.btn-order');
   formBtn.addEventListener('click', function (event) {
