@@ -30,12 +30,16 @@ class Contact {
     this.city = city;
     this.email = email;
   }
-}
-
-//Création de la classe "products"
-class Products {
-  constructor(products) {
-    this.products = products;
+  validContact() {
+    if ((typeof this.firstName==='string' && this.firstName!="") && 
+        (typeof this.lastName==='string' && this.lastName!="") &&
+        (typeof this.address==='string' && this.address!="") &&
+        (typeof this.city==='string' && this.city!="") &&
+        (typeof this.email==='string' && this.email!="")) {
+          return true;
+        } else {
+          return false;
+        }
   }
 }
 
@@ -339,7 +343,7 @@ const sendOrder = () => {
   let products = getProducts();
 
   //Vérification des types de contact et products avant l'envoi
-  if(Array.isArray(products) && (contact instanceof Contact)) {
+  if(Array.isArray(products) && contact.validContact()) {
     //Si contact et products sont du bon type on crée la variable body qui sera envoyée
     let body = new Body(contact, products);
 
@@ -383,7 +387,7 @@ const sendOrder = () => {
 //Fonction récupération du tableau products à envoyer au serveur
 /**
  * 
- * @returns {Array} products
+ * @returns {Array}
  */
 const getProducts = () => {
   if(localStorage.getItem('basket')) {
@@ -724,9 +728,7 @@ const postBasket = () => {
 
     //Récupèration du panier sur localStorage
     const basket = localStorage.getItem("basket").split(",").filter(word => word.length > 2);
-    console.log(basket);
     const quantities = localStorage.getItem("basket").split(",").filter(word => word.length < 3);
-    console.log(quantities);
     //Afficher le contenu du panier et le prix total
     getBasket(basket, quantities);
 
