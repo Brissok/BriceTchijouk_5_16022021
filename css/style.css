@@ -408,6 +408,14 @@ h2 {
   .basket_price > p:last-child {
     text-align: end;
   }
+
+  .products_list {
+    margin-left: 0;
+  }
+
+  .trash {
+    margin-top: 0.85em;
+  }
 }
 @media only screen and (min-width: 768px) {
   .products_list--item > .product_name {

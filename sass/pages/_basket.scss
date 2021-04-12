@@ -66,6 +66,12 @@
     .basket_price>p:last-child {
         text-align: end;
     }
+    .products_list {
+        margin-left: 0;
+    }
+    .trash {
+        margin-top: .85em;
+    }
 }
 
 @media #{$medium-up} {
