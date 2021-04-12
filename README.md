@@ -1,6 +1,6 @@
 # Orinoco #
 
-This is the back end server for Project 5 of the Junior Web Developer path.
+This is the code of the web app for Project 5 of the Junior Web Developer path.
 
 ### Prerequisites ###
 
@@ -10,10 +10,7 @@ You will need to have Node and `npm` installed locally on your machine.
 
 Clone this repo. From within the project folder, run `npm install`. You 
 can then run the server with `node server`. 
-The server should run on `localhost` with default port `3000`. If the
-server runs on another port for any reason, this is printed to the
-console when the server starts, e.g. `Listening on port 3001`.
 
-### GitHub Page ###
+### Use ###
 
-https://brissok.github.io/BriceTchijouk_5_16022021/
+Open index.html in your browser to use the app.
